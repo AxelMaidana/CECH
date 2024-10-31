@@ -1,0 +1,50 @@
+---
+// Importa los modales
+import ModalNoLogin from '../../modales/NoLogin.astro';
+import ModalLogin from '../../auth/LoginModal';
+import ModalRegistro from '../../auth/RegisterModal';
+import ModalInscripcionExitosa from '../../modales/InscripcionExitosa.astro';
+
+const { title, image, price, modality, duration, description } = Astro.props;
+---
+
+<div class="mx-auto p-2 md:p-6 max-w-7xl rounded-3xl overflow-hidden">
+  <div class="relative w-auto md:h-[600px] overflow-hidden rounded-t-3xl">
+    <img src={image} alt={`Imagen de ${title}`} class="w-full h-full object-cover" />
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
+  </div>
+
+  <div class="bg-white p-4 relative">
+    <div class="relative z-10">
+      <h1 class="md:text-7xl text-5xl font-bold mb-2">{title}</h1>
+      <div class="flex flex-wrap gap-8 my-6">
+        <div>
+          <button id="inscribirme-btn" class="bg-customBlue hover:scale-105 transition duration-300 ease-in-out text-white px-10 py-3 rounded-xl text-xl font-semibold">
+            Inscribirme Ahora
+          </button>
+        </div>
+        <div class="flex flex-wrap gap-3 md:justify-end items-center">
+          <span class="text-customCyan px-3 py-1 border-solid border-2 border-customCyan rounded-lg text-lg font-semibold">{price}</span>
+          <span class="text-customCyan px-3 py-1 border-solid border-2 border-customCyan rounded-lg text-lg font-semibold">{modality}</span>
+          <span class="text-customCyan px-3 py-1 border-solid border-2 border-customCyan rounded-lg text-lg font-semibold">{duration}</span>
+        </div>
+      </div>
+      <p class="text-lg font-normal text-gray-600" set:html={description}>{description}</p>
+    </div>
+  </div>
+
+  {/* Aquí insertas los modales */}
+  <ModalNoLogin />
+  <ModalLogin />
+  <ModalRegistro />
+  <ModalInscripcionExitosa />
+</div>
+
+
+<script src="/src/components/js/modalsInscripcion.js"></script>
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>

@@ -1,0 +1,13 @@
+---
+// src/pages/admin/dashboard.astro
+import Layout from '../../layouts/Layout.astro';
+import UserTable from '../../components/admin/UserTable';
+---
+
+<Layout title="Dashboard de Admin">
+  <main class="container mx-auto mt-8 p-4 h-screen">
+    <h1 class="text-3xl font-bold mb-4">Dashboard de Admin</h1>
+    <UserTable client:load />
+  </main>
+</Layout>
+

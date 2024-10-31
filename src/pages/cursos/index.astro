@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Busqueda from '../../components/ActAcademicas/Busqueda.astro';
+import TextoInformativo from '../../components/ActAcademicas/TextoInformativo.astro';
+import CardGrid from '../../components/common/CardGrid.astro';
+---
+
+<Layout title="Act. Académicas">
+    <Busqueda/>
+    <TextoInformativo title="Acceso gratuito a los cursos" sizeText="text-2xl md:text-3xl">
+        La inscripción y el acceso a los cursos son <strong>completamente gratuitos</strong>. Sin embargo, si deseas obtener un <strong>certificado</strong> al finalizar, este <strong>tiene un costo adicional.</strong>
+    </TextoInformativo>
+    <CardGrid />
+</Layout>
+
+

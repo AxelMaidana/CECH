@@ -1,0 +1,37 @@
+<!-- Modal principal -->
+<div id="certificat-stepOne-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white text-customBlack p-6 md:p-8 rounded-3xl shadow-lg max-w-md md:max-w-xl w-full transform transition-transform duration-300 scale-95 translate-y-4">
+        <div class="flex flex-col items-center mb-6">
+            <div class="flex items-center w-full">
+                <button class="flex-1 h-12 text-sm md:text-base rounded-2xl text-white bg-customBlue flex items-center justify-center font-semibold cursor-default">Formulario</button>
+                <div class="w-20 border-t border-customBlue mx-2"></div>
+                <button class="flex-1 h-12 rounded-2xl text-customBlue border-2 border-customBlue flex items-center justify-center font-semibold cursor-default">Pago</button>
+            </div>
+        </div>
+
+        <h2 class="text-2xl md:text-3xl text-center font-bold mt-2 mb-6">SOLICITUD DE CERTIFICADO</h2>
+
+        <form class="space-y-6">
+            <div class="mb-4">
+                <label for="first-name-certificate" class="block text-lg font-bold">Nombre</label>
+                <input type="text" id="first-name-certificate" class="border border-customBlack rounded-2xl w-full p-2" required />
+            </div>
+            <div class="mb-4">
+                <label for="last-name-certificate" class="block text-lg font-bold">Apellido</label>
+                <input type="text" id="last-name-certificate" class="border border-customBlack rounded-2xl w-full p-2" required />
+            </div>
+            <div class="mb-4">
+                <label for="dni-certificate" class="block text-lg font-bold">DNI</label>
+                <input type="text" id="dni-certificate" class="border border-customBlack rounded-2xl w-full p-2" required />
+            </div>
+            <div class="mb-4">
+                <label for="birthdate-certificate" class="block text-lg font-bold">Fecha de Nacimiento</label>
+                <input type="date" id="birthdate-certificate" class="border border-customBlack rounded-2xl w-full p-2" required />
+            </div>
+
+            <div class="flex justify-end pt-4 mt-8">
+                <button id="stepTwo-btn" class="text-customBlue underline transition duration-300 hover:scale-105 text-sm font-semibold">SIGUIENTE</button>
+            </div>
+        </form>
+    </div>
+</div>

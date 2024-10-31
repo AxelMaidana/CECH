@@ -1,0 +1,43 @@
+---
+// Footer.astro
+const { logoSrc, copyrightText, instagramLink, facebookLink, padding } = Astro.props;
+---
+<!-- Footer -->
+<footer class=`bg-customBlack text-white p-2 md:px-12 md:gap-x-2 flex flex-col md:flex-row justify-between items-center ${padding} `>
+  <!-- Sección de la izquierda: imagen y texto -->
+  <div class="flex flex-col md:flex-row items-center space-x-4 mb-4 gap-y-2 md:mb-0 | md:space-x-0 md:gap-x-2">
+    <!-- Imagen -->
+    <img src={logoSrc} alt="Logo CECH" class="h-16 w-auto md:h-20" />
+    
+    <!-- Texto -->
+    <div class="text-xs w-48 text-center md:text-sm md:text-left md:w-auto ">
+      <p>&copy; {copyrightText}</p>
+    </div>
+  </div>
+  
+  <!-- Sección de la derecha: SVG y h3 -->
+  <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 text-center md:text-left">
+    <div class="flex space-x-2">
+      <!-- SVG de Instagram -->
+      <a href={instagramLink} aria-label="Instagram">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-instagram">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M4 4m0 4a4 4 0 0 1 4 -4h8a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-8a4 4 0 0 1 -4 -4z" />
+          <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+          <path d="M16.5 7.5l0 .01" />
+        </svg>
+      </a>
+      <!-- SVG de Facebook -->
+      <a href={facebookLink} aria-label="Facebook">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-brand-facebook">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M7 10v4h3v7h4v-7h3l1 -4h-4v-2a1 1 0 0 1 1 -1h3v-4h-3a5 5 0 0 0 -5 5v2h-3" />
+        </svg>
+      </a>
+    </div>
+    <div class="md:border-r border-[1px] w-16 md:w-0 md:h-8 border-gray-300/10"></div>
+    <div>
+      <h3 class="text-sm md:text-md">Redes Sociales</h3>
+    </div>
+  </div>
+</footer>

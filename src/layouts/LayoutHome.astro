@@ -1,0 +1,40 @@
+---
+import Header from '../components/layout/Header.astro';
+import Nav from '../components/layout/MobileNav.jsx';
+import ViewTransitions from 'astro/components/ViewTransitions.astro';
+import Footer from '../components/layout/Footer.astro';
+import LoadingSpinner from '../components/common/LoadingSpinner.jsx';
+import '../styles/gobal.css';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Astro description" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/media/cechLogo.png" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body class="flex flex-col flex-grow">
+		<LoadingSpinner client:load/>
+		<ViewTransitions />
+		<Header />
+		<Nav client:load/>
+		<slot />
+		<Footer 
+		logoSrc="/media/cechLogo.png"
+		copyrightText="Todos los derechos reservados"
+		instagramLink="https://www.instagram.com/cech.instituto/"
+		facebookLink="https://www.facebook.com/cech.instituto/"
+		padding="md:pt-8 md:-mt-6 pt-10 -mt-6"
+		/>
+	</body>
+</html>

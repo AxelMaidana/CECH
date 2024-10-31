@@ -1,0 +1,41 @@
+---
+const { price } = Astro.props;
+---
+
+<div class="
+    flex flex-col 
+    justify-between text-center 
+    overflow-hidden 
+    py-8 | sm:p-4 | md:p-0 md:py-8
+    md:flex-col md:gap-3 | lg:flex-row
+    ">
+  <!-- Contenedor de Precio del Certificado -->
+  <div class="
+      items-center
+      text-white
+      w-full md:w-3/5 lg:w-2/5
+      py-6
+      bg-customBlue rounded-3xl | md:rounded-none md:rounded-r-2xl
+      shadow-custom shadow-black/40
+      hover:scale-105 transition-all duration-300 ease-in-out mt-0 md:mt-0
+      md:mr-auto
+      ">
+    <h2 class="font-bold text-lg">Precio del Certificado</h2>
+    <h1 class="pl-2 font-extrabold text-3xl text-customCyan">{price}</h1>
+  </div>
+
+  <!-- Contenedor de Método de Pago -->
+  <div class="
+      items-center
+      text-white
+      w-full md:w-3/5 lg:w-2/5
+      py-6
+      bg-customBlue rounded-3xl | md:rounded-none md:rounded-l-2xl
+      shadow-custom shadow-black/40
+      hover:scale-105 transition-all duration-300 ease-in-out mt-6 md:mt-0
+      md:ml-auto
+      ">
+    <h2 class="font-bold text-lg">Método de Pago</h2>
+    <h1 class="pl-2 font-extrabold text-3xl text-customCyan">Transferencia Bancaria</h1>
+  </div>
+</div>

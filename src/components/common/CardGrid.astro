@@ -1,0 +1,27 @@
+---
+import { db } from '../../firebase/client';
+import { collection, getDocs } from 'firebase/firestore';
+import Card from './Card.astro';
+
+const postsCollection = collection(db, 'posts');
+const querySnapshot = await getDocs(postsCollection);
+const posts = querySnapshot.docs.map(doc => ({
+  id: doc.id,
+  ...doc.data()
+}));
+---
+
+<div class="grid gap-4 p-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+  {posts.map((post) => (
+    <Card
+      title={post.title}
+      description={post.description}
+      imageUrl={post.imageUrl}
+      price={post.price}
+      day={post.day}
+      modality={post.modality}
+      hours={post.hours}
+      id={post.id}
+    />
+  ))}
+</div>

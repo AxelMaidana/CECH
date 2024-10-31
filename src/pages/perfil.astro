@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import UserProfile from '../components/user/UserProfile.jsx';
+import Pastilla from '../components/ActAcademicas/detalle/Pastilla.astro';
+---
+
+<Layout title="Perfil">
+  <Pastilla 
+    title="Perfil de usuario"
+  />
+  <main class="container mx-auto mt-8 p-4 h-screen">
+    <UserProfile client:load />
+  </main>
+</Layout>
+

@@ -1,0 +1,13 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import CourseEditor from '../../../../components/CourseEditor';
+
+const { id } = Astro.params;
+---
+
+<Layout title="Editar Curso">
+  <main>
+    <CourseEditor client:only courseId={id} />
+  </main>
+</Layout>
+

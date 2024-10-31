@@ -1,0 +1,9 @@
+---
+const { title, rounded, color, size, sizeText, shadow, id } = Astro.props;
+---
+
+<button id={id} class={`flex items-center justify-center ${size} px-6 py-3 text-white ${color} ${rounded} ${shadow} hover:scale-105 transition-all duration-300 ease-in-out`}>
+  <div class="flex items-center space-x-2">
+    <p class={`${sizeText} font-semibold text-center`}>{title}</p>
+  </div>
+</button>
