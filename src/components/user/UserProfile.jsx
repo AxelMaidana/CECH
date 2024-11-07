@@ -73,8 +73,8 @@ export default function UserProfile() {
         
         <div className="md:col-span-2">
           <div className="mb-6">
-            {/* Pasando los permisos como prop */}
-            <PermissionsDropdown permissions={profileDefaults.permissions}/>
+            {/* Pasando los permisos como prop si es admin */}
+            { userData.role === 'admin' ? <PermissionsDropdown permissions={profileDefaults.permissions}/> : null }
           </div>
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           <div>

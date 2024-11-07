@@ -1,6 +1,7 @@
 ---
 //barra de busqueda a la derecha con pastilla de texto a la izquierda
 import CreateCourseButton from '../common/CreateCourseButton';
+import RoleCondition from '../../components/common/CondicionPorRol';
 ---
 
 <div class="flex items-center justify-between pt-8 pr-8">
@@ -11,7 +12,9 @@ import CreateCourseButton from '../common/CreateCourseButton';
       </h3>
     </div>
     <div class="flex items-center">
-      <CreateCourseButton client:load />
+      <RoleCondition client:only="react">
+        <CreateCourseButton client:only="react" />
+      </RoleCondition>
     <!-- Barra de búsqueda a la derecha -->
     <div class="relative flex items-center ml-4 border-2 border-customGreen rounded-3xl">
       

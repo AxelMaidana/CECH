@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMap, AttributionControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -17,7 +17,7 @@ const locations = [
     id: 1,
     name: 'Av. Sarmiento 1234, Resistencia, Chaco',
     HorariosTitle: 'Horarios de Atención',
-    coordinates: [-27.4415279, -58.9754083],
+    coordinates: [-27.4415279, -58.9754083] as [number, number],
     image: '/media/mapa.png',
     description: 'Lunes a viernes de 08:30 a 13:00 hs y 16:00 a 20:30 hs',
   },
@@ -25,7 +25,7 @@ const locations = [
     id: 2,
     name: 'French 414, Resistencia, Chaco',
     HorariosTitle: 'Horarios de Atención',
-    coordinates: [-27.4511178, -58.9790227],
+    coordinates: [-27.4511178, -58.9790227] as [number, number],
     image: '/media/mapa.png',
     description: 'Lunes a viernes de 09:00 a 13:00 hs y 16:30 a 20:30 hs',
   },
@@ -33,17 +33,17 @@ const locations = [
     id: 3,
     name: 'San Fernando 156, Resistencia, Chaco',
     HorariosTitle: 'Horarios de Atención',
-    coordinates: [-27.4413643, -58.9949152],
+    coordinates: [-27.4413643, -58.9949152] as [number, number],
     image: '/media/mapa.png',
     description: 'Lunes a viernes de 09:00 a 13:00 hs y 16:00 a 20:00 hs',
   },
 ];
 
 // Componente para actualizar la vista del mapa
-function ChangeView({ center }) {
+function ChangeView({ center }: { center: [number, number] }) {
   const map = useMap();
   useEffect(() => {
-    map.setView(center, 14);
+    map.setView(center, 16);
   }, [center, map]);
   return null;
 }
@@ -73,7 +73,7 @@ export default function LocationMap() {
               <button
                 key={location.id}
                 onClick={() => setSelectedLocation(location)}
-                className="flex items-center justify-center w-full text-white/80 hover:text-white hover:bg-white/10 hover:scale-105 lg:hover:scale-110 transition-all duration-300 ease-in-out rounded-lg p-2 sm:mr-0 md:px-6 "
+                className={`flex items-center justify-center w-full text-white/80 hover:text-white hover:bg-white/10 hover:scale-105 lg:hover:scale-110 transition-all duration-300 ease-in-out rounded-lg p-2 sm:mr-0 md:px-6 ${selectedLocation.id === location.id ? 'bg-white/20' : ''}`}
               >
                 <div className="flex-grow text-left pr-2">
                   <h4 className="text-sm lg:text-xs xl:text-base font-semibold">{location.name}</h4>
@@ -91,12 +91,19 @@ export default function LocationMap() {
 
           {/* Segunda columna: Mapa interactivo */}
           <div className="w-full lg:w-2/4 order-1 lg:order-2 z-30">
-            <div className="relative bg-customBlue p-1 rounded-lg shadow-md">
-              <MapContainer style={{ height: '400px', width: '100%' }}
-              
+            <div className="relative bg-customBlue p-1 rounded-lg shadow-md overflow-hidden">
+              <MapContainer 
+                style={{ height: '400px', width: '100%' }}
+                center={selectedLocation.coordinates}
+                zoom={16}
+                zoomControl={false}
               >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <Marker position={selectedLocation.coordinates} />
+                <TileLayer
+                  url="https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+                  subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
+                />
+                <ZoomControl position="bottomright" />
+                <Marker position={selectedLocation.coordinates} icon={customIcon} />
                 <ChangeView center={selectedLocation.coordinates} />
               </MapContainer>
             </div>

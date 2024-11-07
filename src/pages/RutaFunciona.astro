@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Pastilla from '../components/ActAcademicas/detalle/Pastilla.astro';
+import RouteGuard from '../components/auth/ProtectedRole';
+---
+
+<Layout title="Ruta Funciona">
+  <RouteGuard client:only="react">
+    <Pastilla title="Ruta Funciona" />
+    <main class="container mx-auto mt-8 p-4 h-screen">
+      <h1 class="text-3xl font-bold mb-4">Ruta Funciona</h1>
+      <p class="mb-4">
+        La ruta funciona es una actividad que se realiza en la escuela para
+        promover la participación y la colaboración entre los estudiantes. Se
+        realiza en grupos de estudiantes que se organizan en diferentes niveles
+        de dificultad y se lleva a cabo durante el mes de febrero.
+      </p>
+    </main>
+  </RouteGuard>
+</Layout>

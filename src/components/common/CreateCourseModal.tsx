@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../../firebase/client';
 import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 interface CreateCourseModalProps {
   onClose: () => void;
@@ -108,9 +110,9 @@ export default function CreateCourseModal({ onClose, editData }: CreateCourseMod
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div className="bg-gray-100 rounded-3xl shadow-custom shadow-black/40 overflow-hidden flex flex-col max-w-[410px] w-full">
-      <form onSubmit={handleSubmit} className="flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center p-4 z-50 animate-fadeIn">
+    <div className="bg-gray-100 rounded-3xl shadow-custom shadow-black/40 overflow-hidden flex flex-col max-w-[460px] w-full ">
+      <form onSubmit={handleSubmit} className="flex flex-col ">
         {/* Imagen para subir */}
         <div
           onClick={() => document.getElementById('imageInput')?.click()}
@@ -137,30 +139,34 @@ export default function CreateCourseModal({ onClose, editData }: CreateCourseMod
           />
         </div>
   
-        <div className="bg-white p-6 flex flex-col">
+        <div className="bg-white p-6 flex flex-col ">
           <textarea
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-0 bg-transparent text-3xl mb-1 font-bold text-customBlue overflow-hidden"
+            className="w-full border p-2 rounded-2xl border-gray-200 outline-none bg-transparent text-3xl mb-1 font-bold text-customBlue overflow-hidden"
             placeholder="Título"
             required
             rows={1}
-            style={{ resize: 'none', minHeight: '80px' }} 
+            style={{ resize: 'none', minHeight: '90px' }} 
           />
           
-          <textarea
+          <ReactQuill
             value={description}
             onChange={(e) => {
-              setDescription(e.target.value);
-              e.target.style.height = 'auto'; 
-              e.target.style.height = `${e.target.scrollHeight}px`; 
+              setDescription(e);
             }}
-            className="w-full p-0 bg-transparent resize-none text-gray-700 line-clamp-2 overflow-hidden mb-4"
-            rows={1}
+            className="w-full mt-2 rounded-2xl outline-none bg-transparent resize-none text-gray-700 line-clamp-2 overflow-hidden mb-4"
             placeholder="Descripción"
-            required
-            style={{ resize: 'none', minHeight: '50px' }} 
-          />
+            modules={{
+              toolbar: [
+                ['bold', 'italic', 'underline'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['clean'],
+              ],
+            }}
+            style={{ resize: 'none', minHeight: '50px' }}
+            theme="snow"
+            ></ReactQuill>
   
           <div className="flex flex-wrap gap-2 mb-4"> 
           <input
@@ -168,7 +174,7 @@ export default function CreateCourseModal({ onClose, editData }: CreateCourseMod
               value={hours}
               placeholder='Horario'
               onChange={(e) => setHours(e.target.value)}
-              className="flex-shrink-0 text-sm bg-slate-100 h-8 p-2 rounded-full border" // Mantengo el tamaño
+              className="flex-shrink-0 border-customBlue outline-none text-sm bg-slate-100 h-8 p-2 rounded-full border-2" // Mantengo el tamaño
               required
             />
             <input
@@ -176,7 +182,7 @@ export default function CreateCourseModal({ onClose, editData }: CreateCourseMod
               value={modality}
               placeholder='Modalidad'
               onChange={(e) => setModality(e.target.value)}
-              className="flex-shrink-0 text-sm bg-slate-100 h-8 p-2 rounded-full border" // Mantengo el tamaño
+              className="flex-shrink-0 border-customBlue outline-none text-sm bg-slate-100 h-8 p-2 rounded-full border-2" // Mantengo el tamaño
               required
             />
             <input
@@ -184,7 +190,7 @@ export default function CreateCourseModal({ onClose, editData }: CreateCourseMod
               value={day}
               placeholder='Día'
               onChange={(e) => setDay(e.target.value)}
-              className="flex-shrink-0 text-sm bg-slate-100 h-8 p-2 rounded-full border" // Mantengo el tamaño
+              className="flex-shrink-0 border-customBlue outline-none text-sm bg-slate-100 h-8 p-2 rounded-full border-2" // Mantengo el tamaño
               required
             />
           </div>
@@ -194,29 +200,29 @@ export default function CreateCourseModal({ onClose, editData }: CreateCourseMod
             value={price}
             placeholder='Precio'
             onChange={(e) => setPrice(e.target.value)}
-            className="w-fit text-sm h-8 p-2 rounded-full border-none mb-4"
+            className="w-fit border rounded-full border-gray-200 outline-none text-sm h-8 p-2 mb-4"
             required
           />
   
-          <div className="flex justify-end gap-2">
+        </div>
+      </form>
+    </div>
+          <div className="flex justify-end gap-2 mt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 bg-transparent border rounded"
+              className="px-4 py-2 text-black font-semibold bg-customCyan rounded-full hover:scale-105 transition-all duration-200 ease-in-out"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-blue-300"
+              className="px-4 py-2 text-white font-semibold bg-[#187498] rounded-full hover:scale-105 transition-all duration-200 ease-in-out"
             >
               {loading ? 'Guardando...' : (editData ? 'Guardar Cambios' : 'Crear Curso')}
             </button>
           </div>
-        </div>
-      </form>
-    </div>
   </div>  
   );
 }

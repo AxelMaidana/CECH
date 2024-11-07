@@ -1,16 +1,17 @@
 ---
-import Header from '../components/layout/Header.astro';
-import Nav from '../components/layout/MobileNav.jsx';
+import Header from '../components/layout/Header.astro';	
 import ViewTransitions from 'astro/components/ViewTransitions.astro';
 import Footer from '../components/layout/Footer.astro';
 import LoadingSpinner from '../components/common/LoadingSpinner.jsx';
 import '../styles/gobal.css';
+import MostrarNav from '../components/layout/MostrarNav.tsx';
 
 interface Props {
 	title: string;
 }
 
 const { title } = Astro.props;
+
 ---
 
 <!doctype html>
@@ -23,11 +24,13 @@ const { title } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>
-	<body class="flex flex-col flex-grow">
+	<body class="flex flex-col flex-grow h-screen">
 		<LoadingSpinner client:load />
 		<ViewTransitions />
 		<Header />
-		<Nav client:load/>
+
+		<MostrarNav client:load />
+		
 		<slot />
 		<Footer 
 		logoSrc="/media/cechLogo.png"

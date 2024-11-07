@@ -12,7 +12,7 @@ const Card: React.FC<CardProps> = ({ title, imageUrl, date, isFocused }) => {
     <div
       className={`h-full flex flex-col mb-3 bg-customBlue rounded-2xl overflow-visible shadow-lg transform transition duration-300 
       ${isFocused ? 'scale-105 lg:scale-100' : 'scale-95 lg:scale-100'} 
-      ${isFocused ? 'opacity-100' : 'opacity-50 lg:opacity-100'}  // Aplica opacidad en pantallas menores a 1024px
+      ${isFocused ? 'opacity-100' : 'opacity-50 lg:opacity-100'}
       min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[260px] xl:min-h-[280px] min-w-[200px] sm:min-w-[250px] md:min-w-[300px] relative`}
     >
       {/* Contenedor para la fecha */}

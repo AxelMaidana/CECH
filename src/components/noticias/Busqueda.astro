@@ -1,0 +1,31 @@
+---
+//barra de busqueda a la derecha con pastilla de texto a la izquierda
+import CreateNoticiaButton from '../common/CreateNoticiaButton';
+import RoleCondition from '../../components/common/CondicionPorRol';
+---
+
+<div class="flex items-center justify-between pt-8 pr-8">
+    <!-- Pastilla de texto a la izquierda -->
+    <div class="relative flex-shrink-0">
+      <h3 class="md:text-2xl font-bold bg-customGreen text-white md:px-8 md:py-2.5 px-3 py-1 rounded-r-full text-center">
+        Cursos disponibles
+      </h3>
+    </div>
+    <div class="flex items-center">
+      <div class="">
+        <RoleCondition client:only="react">
+          <CreateNoticiaButton client:only="react" />
+        </RoleCondition>
+      </div>
+    <!-- Barra de búsqueda a la derecha -->
+    <div class="relative flex items-center ml-4 border-2 border-customGreen rounded-3xl">
+      
+      <input type="text" placeholder="Buscar cursos" class="md:h-10 h-7 md:w-72 w-36 md:px-5 px-3 md:pr-10 text-sm bg-gray-100 rounded-3xl focus:outline-none" />
+      <div class="absolute inset-y-0 right-0 flex items-center md:pr-3 pr-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" />
+        </svg>
+      </div>
+    </div>
+    </div>
+  </div>

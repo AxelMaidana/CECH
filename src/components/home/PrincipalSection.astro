@@ -1,8 +1,9 @@
-
 ---
 import InfiniteCarrousel from './InfiniteCarrousel.tsx';
 import LocationMap from './LocationMap.tsx';
+import ContactForm from './ContactForm.tsx';
 ---
+
 <!-- Sección de noticia destacada -->
 <section class="relative w-full h-[30rem] -mt-8 z-10">
   <img src="/media/banner.png" alt="Imagen principal" class="absolute top-0 left-0 w-full h-full object-cover z-0" />
@@ -32,77 +33,4 @@ educación de calidad y ser el puente entre la teoría y la práctica.
 <!-- Seccion de Ubicacion con mapa interactivo -->
   <LocationMap client:only="react" />
 
-  <section class="relative bg-customBlue text-white py-12 sm:py-16 md:py-20 rounded-3xl z-10 -mt-6">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        {/* Texto informativo */}
-        <div class="flex flex-col justify-center">
-          <h2 class="text-4xl text-center  sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-bold mb-4">
-            ¡Contáctanos!
-          </h2>
-          <p class="mb-6 lg:mb-0 mt-4 text-sm sm:text-base text-center">
-            ¿Tienes alguna consulta o necesitas más información
-            sobre nuestros cursos y servicios? Completa el formulario y nos pondremos en
-            contacto contigo a la brevedad.
-          </p>
-        </div>
-  
-        {/* Formulario */}
-        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md text-gray-700 z-20 w-full">
-          <h3 class="text-2xl sm:text-3xl lg:text-3xl xl:text-4xl font-semibold mb-6 text-center text-gray-800">
-            Lorem ipsum dolor sit
-          </h3>
-          <div class="flex flex-col lg:flex-row gap-6 2xl:gap-16">
-            {/* Formulario de Contacto */}
-            <form class="space-y-4 w-full lg:w-1/2">
-              <input 
-                type="text" 
-                placeholder="Nombre y Apellido" 
-                class="w-full p-2 rounded-3xl border-gray-200 text-sm bg-gray-100" 
-              />
-              <input 
-                type="text" 
-                placeholder="DNI" 
-                class="w-full p-2 rounded-3xl border-gray-200 text-sm bg-gray-100" 
-              />
-              <input 
-                type="email" 
-                placeholder="Mail" 
-                class="w-full p-2 rounded-3xl border-gray-200 text-sm bg-gray-100" 
-              />
-              <input 
-                type="tel" 
-                placeholder="Teléfono" 
-                class="w-full p-2 rounded-3xl border-gray-200 text-sm bg-gray-100" 
-              />
-            </form>
-  
-            {/* Imagen placeholder */}
-            <div class="w-full lg:w-1/2 aspect-[16/9] bg-gray-200 rounded-xl flex items-center justify-center overflow-hidden">
-              <img
-                src="/media/subir imagen.jpeg"
-                width={640}
-                height={360}
-                class="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-  
-          {/* Botón centrado */}
-          <div class="flex justify-center lg:justify-center mt-6">
-            <button 
-              type="submit" 
-              class="w-full sm:w-72 bg-customGreen text-white py-3 px-6 rounded-3xl transition-transform hover:scale-105"
-            >
-              Enviar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  
-  
-
-  
-  
+  <ContactForm client:only/>

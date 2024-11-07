@@ -1,0 +1,86 @@
+---
+import Layout from '../layouts/Layout.astro';
+import EditorComponent from '../components/common/Editor';
+import RoleCondition from '../components/common/RoleCondition';
+import ContentHeader from '../components/common/ViewCondition';
+import { db } from '../firebase/client';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import Card from '../components/noticias/ultNoticias'; // Importa el componente Card para mostrar cada noticia
+
+const { slug } = Astro.params;
+const pageId = slug || 'index';
+
+// Verifica si la página existe en Firestore
+const pageRef = doc(db, 'pages', pageId);
+const pageSnap = await getDoc(pageRef); // Cambié getDocs por getDoc
+
+let pageExists = pageSnap.exists();
+let pageTitle = pageExists ? pageSnap.data().title || slug : 'Page Not Found';
+
+// Traer las noticias de la base de datos
+const noticiasCollection = collection(db, 'noticias');
+const querySnapshot = await getDocs(noticiasCollection);
+const noticias = querySnapshot.docs.map(doc => ({
+  id: doc.id,
+  ...doc.data()
+}));
+
+---
+
+<Layout title={pageTitle}>
+  <div class="flex justify-center items-start w-full max-w-7xl mx-auto mt-6 mb-12 ">
+    <!-- Columna de últimas noticias a la izquierda (visible solo en lg) -->
+    <aside class="hidden lg:block w-80">
+      <h2 class="text-2xl font-bold text-gray-800">Últimas Noticias</h2>
+      <ul class="mt-4 space-y-4 w-full">
+        {noticias.map((noticia) => (
+          <Card
+            title={noticia.title}
+            imageUrl={noticia.imageUrl}
+            date={noticia.date}
+            id={noticia.id}
+            client:only="react"
+          />
+        ))}
+      </ul>
+    </aside>
+
+    <!-- Línea separadora -->
+    <div class="border-l-2 border-gray-300 mx-6 h-full"></div>
+
+    <!-- Contenedor principal con contenido a la derecha -->
+    <main class="flex-1 flex flex-col justify-start items-start">
+      {pageExists ? (
+        <RoleCondition client:only="react">
+          <ContentHeader client:only="react" id={pageId}>
+            <EditorComponent client:only="react" pageId={pageId} />
+          </ContentHeader>
+        </RoleCondition>
+      ) : (
+        <div class="text-center flex flex-col items-center my-36">
+          <div class="mb-4">
+            <!-- Icono SVG para el 404 -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mx-auto text-customBlue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+              <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+              <path d="M5 17h-2v-11a1 1 0 0 1 1 -1h9v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5" />
+              <path d="M6 10h4m-2 -2v4" />
+            </svg>
+          </div>
+
+          <h1 class="text-6xl font-bold text-gray-800">404</h1>
+          <p class="text-lg text-gray-600 mt-2">
+            La página que buscas no existe.
+          </p>
+
+          <a href="/" class="mt-6 inline-block text-customBlue hover:underline">
+            ⬅ Volver al inicio
+          </a>
+        </div>
+      )}
+    </main>
+  </div>
+</Layout>
+
+

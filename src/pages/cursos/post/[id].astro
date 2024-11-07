@@ -7,10 +7,11 @@ import SectionDocente from '../../../components/ActAcademicas/detalle/SectionDoc
 import InfoExtra from '../../../components/ActAcademicas/detalle/InfoExtra.astro';
 import CardSide from '../../../components/ActAcademicas/detalle/CardSide.astro';
 import Certificado from '../../../components/ActAcademicas/detalle/Certificado.astro';
-
+import ButtonEditCourse from '../../../components/CourseEditor/ButtonEditCourse.tsx';
 import { db } from '../../../firebase/client';
 import { doc, getDoc } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+
 
 interface Props {
   id: string;
@@ -28,14 +29,14 @@ const teachers = courseData.data()?.teachers || []; // Obtenemos el array de pro
 
 // Obtener el URL del PDF
 const pdfUrl = courseData.data()?.pdfUrl;
+
+
 ---
 
 <Layout title={courseData.data()?.title}>
   <div class="flex justify-between items-center">
     <Pastilla title="Información del curso" />
-    <button class="hover:scale-105 transition-all duration-300 ease-in-out mr-56">
-      <a href={`./${id}/edit`} class="font-bold bg-customBlue text-white px-4 py-2 rounded-xl">Editar curso</a>
-    </button>
+    <ButtonEditCourse id={id} client:only="react" />
   </div>
 
   <Banner 

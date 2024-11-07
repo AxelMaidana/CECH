@@ -3,11 +3,11 @@ import { auth, db } from '../../firebase/client';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 
-
 export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginButtonText }) {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -20,6 +20,7 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
         setUser(null);
         setUserData(null);
       }
+      setLoading(false); // Detiene el estado de carga
     });
 
     const handleClickOutside = (event) => {
@@ -55,7 +56,7 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
   };
 
   return (
-    <header className="bg-customBlue text-white py-2">
+    <header className="bg-customBlue text-white py-2 ">
       <div className="container flex flex-row justify-between items-center mx-auto px-2 space-x-0">
         <div className="flex items-center text-left md:flex-row md:items-center gap-2 md:gap-4">
           <a href="/">
@@ -72,8 +73,20 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
           </a>
         </div>
 
-        <div className="flex items-center">
-          {!user ? (
+        <div className="flex items-center my-auto">
+          {loading ? (
+                <div className="flex items-center space-x-3 mb-auto">
+                    {/* Placeholder para el nombre */}
+                    <div className='hidden lg:visible'>
+                        <div className="bg-gray-300 animate-pulse rounded-md h-5 w-16 mb-1"></div>
+                        {/* Placeholder para el rol */}
+                        <div className="bg-gray-300 animate-pulse rounded-md h-3 w-20"></div>
+                    </div>
+                    
+                    {/* Placeholder para la imagen de perfil */}
+                    <div className="bg-gray-300 animate-pulse rounded-full h-16 w-16"></div>
+              </div>
+          ) : !user ? (
             <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2">
               <button
                 onClick={handleLogin}
@@ -105,27 +118,18 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
                   <ul className="p-2">
                     <li className="transform hover:scale-105 transition duration-200">
                       <a href="/perfil" className="flex items-center p-2 text-sm text-gray-900 rounded-lg hover:bg-gray-100 w-full text-left">
-                        <svg className="mr-2" data-testid="geist-icon" height="16" strokeLinejoin="round" viewBox="0 0 16 16" width="16" style={{ color: 'currentcolor' }}>
-                          <path fillRule="evenodd" clipRule="evenodd" d="M7.75 0C5.95507 0 4.5 1.45507 4.5 3.25V3.75C4.5 5.54493 5.95507 7 7.75 7H8.25C10.0449 7 11.5 5.54493 11.5 3.75V3.25C11.5 1.45507 10.0449 0 8.25 0H7.75ZM6 3.25C6 2.2835 6.7835 1.5 7.75 1.5H8.25C9.2165 1.5 10 2.2835 10 3.25V3.75C10 4.7165 9.2165 5.5 8.25 5.5H7.75C6.7835 5.5 6 4.7165 6 3.75V3.25ZM2.5 14.5V13.1709C3.31958 11.5377 4.99308 10.5 6.82945 10.5H9.17055C11.0069 10.5 12.6804 11.5377 13.5 13.1709V14.5H2.5ZM6.82945 9C4.35483 9 2.10604 10.4388 1.06903 12.6857L1 12.8353V13V15.25V16H1.75H14.25H15V15.25V13V12.8353L14.931 12.6857C13.894 10.4388 11.6452 9 9.17055 9H6.82945Z" fill="currentColor"></path>
-                        </svg>
-                        Perfil  
+                        Perfil
                       </a>
                     </li>
                     {userData?.role === 'admin' && (
                       <li className="transform hover:scale-105 transition duration-200">
                         <a href="/admin/dashboard" className="flex items-center p-2 text-sm text-gray-900 rounded-lg hover:bg-gray-100 w-full text-left">
-                          <svg className="mr-2" data-testid="geist-icon" height="16" strokeLinejoin="round" viewBox="0 0 16 16" width="16" style={{ color: 'currentcolor' }}>
-                            <path fillRule="evenodd" clipRule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H15C15.5523 0 16 0.447716 16 1V10C16 10.5523 15.5523 11 15 11H12.5V9.5H14.5V1.5H1.5V9.5H3.5V11H1C0.447715 11 0 10.5523 0 10V1ZM8 14C6.84509 14 5.76659 14.5772 5.12596 15.5381L5 15.7271V16H3.5V15.5V15.2729L3.62596 15.084L3.87789 14.7061C4.79671 13.3278 6.34356 12.5 8 12.5C9.65644 12.5 11.2033 13.3278 12.1221 14.7061L12.374 15.084L12.5 15.2729V15.5V16H11V15.7271L10.874 15.5381C10.2334 14.5772 9.15491 14 8 14ZM7.75 6C6.50736 6 5.5 7.00736 5.5 8.25V8.75C5.5 9.99264 6.50736 11 7.75 11H8.25C9.49264 11 10.5 9.99264 10.5 8.75V8.25C10.5 7.00736 9.49264 6 8.25 6H7.75ZM7 8.25C7 7.83579 7.33579 7.5 7.75 7.5H8.25C8.66421 7.5 9 7.83579 9 8.25V8.75C9 9.16421 8.66421 9.5 8.25 9.5H7.75C7.33579 9.5 7 9.16421 7 8.75V8.25Z" fill="currentColor"></path>
-                          </svg>
                           Dashboard
                         </a>
                       </li>
                     )}
                     <li className="transform hover:scale-105 transition duration-200">
                       <button onClick={handleLogout} className="flex items-center p-2 text-sm text-gray-900 rounded-lg hover:bg-gray-100 w-full text-left">
-                        <svg className="mr-2" data-testid="geist-icon" height="16" strokeLinejoin="round" viewBox="0 0 16 16" width="16" style={{ color: 'currentcolor' }}>
-                          <path fillRule="evenodd" clipRule="evenodd" d="M2.5 13.5H6.75V15H2C1.44772 15 1 14.5523 1 14V2C1 1.44771 1.44772 1 2 1H6.75V2.5L2.5 2.5L2.5 13.5ZM12.4393 7.24999L10.4697 5.28031L9.93934 4.74998L11 3.68932L11.5303 4.21965L14.6036 7.29288C14.9941 7.6834 14.9941 8.31657 14.6036 8.70709L11.5303 11.7803L11 12.3106L9.93934 11.25L10.4697 10.7197L12.4393 8.74999L5.75 8.74999H5V7.24999H5.75L12.4393 7.24999Z" fill="currentColor"></path>
-                        </svg>
                         Cerrar Sesión
                       </button>
                     </li>

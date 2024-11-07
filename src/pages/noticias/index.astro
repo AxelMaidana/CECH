@@ -1,0 +1,18 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Busqueda from '../../components/noticias/Busqueda.astro';
+import TextoInformativo from '../../components/ActAcademicas/TextoInformativo.astro';
+import CardGrid from '../../components/noticias/CardGrid.astro';
+---
+
+<Layout title="Act. Académicas">
+    <main class="">
+    <Busqueda/>
+    <TextoInformativo title="Acceso gratuito a los noticias" sizeText="text-2xl md:text-3xl">
+        Bienvenido al panel de <strong>Noticias</strong> aqui podras encontrar <strong>todo</strong> sobre lo que paso en estos ultimos tiempos.
+    </TextoInformativo>
+    <CardGrid />
+    </main>
+</Layout>
+
+

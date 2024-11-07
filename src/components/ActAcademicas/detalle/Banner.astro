@@ -8,7 +8,7 @@ import ModalInscripcionExitosa from '../../modales/InscripcionExitosa.astro';
 const { title, image, price, modality, duration, description } = Astro.props;
 ---
 
-<div class="mx-auto p-2 md:p-6 max-w-7xl rounded-3xl overflow-hidden">
+<div class="mx-auto p-2 md:p-6 w-full max-w-[1440px] rounded-3xl ">
   <div class="relative w-auto md:h-[600px] overflow-hidden rounded-t-3xl">
     <img src={image} alt={`Imagen de ${title}`} class="w-full h-full object-cover" />
     <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
@@ -29,7 +29,7 @@ const { title, image, price, modality, duration, description } = Astro.props;
           <span class="text-customCyan px-3 py-1 border-solid border-2 border-customCyan rounded-lg text-lg font-semibold">{duration}</span>
         </div>
       </div>
-      <p class="text-lg font-normal text-gray-600" set:html={description}>{description}</p>
+      <p class="text-lg font-normal text-gray-600" set:html={description}></p>
     </div>
   </div>
 

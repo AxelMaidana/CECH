@@ -4,13 +4,13 @@ import RegisterModal from '../auth/RegisterModal.jsx';
 import HeaderContent from '../common/HeaderContent.jsx';
 ---
 
-<header>
+<header >
     <HeaderContent
     logoSrc="/media/cechLogo.png"
     titleLine1="Colegio de Enfermeria"
     titleLine2="Del Chaco"
     loginButtonText="Iniciar Sesión"
-    client:load /> 
+    client:only="react" />
   </div>
   <LoginModal client:load />
   <RegisterModal client:load />

@@ -1,0 +1,25 @@
+---
+import { db } from '../../firebase/client';
+import { collection, getDocs } from 'firebase/firestore';
+import Card from './Card.tsx';
+
+const noticiasCollection = collection(db, 'noticias');
+const querySnapshot = await getDocs(noticiasCollection);
+const noticias = querySnapshot.docs.map(doc => ({
+  id: doc.id,
+  ...doc.data()
+}));
+---
+
+<div class="grid gap-8 p-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 lg:mx-6 lg:gap-x-8 xl:grid-cols-4 2xl:grid-cols-4 mb-16">
+  {noticias.map((noticia) => (
+    <Card
+      title={noticia.title}
+      description={noticia.description}
+      imageUrl={noticia.imageUrl}
+      date={noticia.date}
+      id={noticia.id}
+      client:only
+    />
+  ))}
+</div>

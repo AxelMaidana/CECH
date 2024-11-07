@@ -1,5 +1,10 @@
 /* Añade esto a tu archivo CSS global o en un archivo CSS específico del componente */
 
+.bg-customBlue {
+  transition: height 0.3s ease-in-out;
+}
+
+
 @keyframes fadeIn {
     from {
       opacity: 0;
@@ -58,3 +63,48 @@
     -webkit-line-clamp: 3;
     line-clamp: 3;
   }
+
+  .tox {
+    border: none !important;
+    border-radius: 6px !important;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1) !important; /* Sombra */
+    outline: none !important;
+    outline-style: hidden !important;
+}
+
+.tox-editor-container {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1) !important; /* Sombra */
+    background-color: transparent !important;
+}
+
+.tox-editor-header {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1) !important; /* Sombra */
+    border-radius: 25px !important;
+    width: 100% !important;
+    height: fit-content !important;
+}
+
+.tox-toolbar__group {
+    border-radius: 25px !important;
+    height: fit-content !important;
+}
+
+.tox-toolbar__primary {
+    border-radius: 25px !important;
+    width: 100% !important;
+
+}
+.tox .tox-toolbar__overflow {
+    margin-left: 0 !important;
+}
+
+.tox-statusbar {
+    display: none !important; /* Oculta la barra de estado */
+}
+
+/* Quitar el borde azul en focus */
+.tox-editor-container:focus {
+    box-shadow: none !important; /* Quitar la sombra en focus */
+    border: none !important; /* Quitar el borde en focus */
+    border-color: none !important; /* Quitar el borde en focus */
+}

@@ -7,7 +7,7 @@ const { id } = Astro.params;
 
 <Layout title="Editar Curso">
   <main>
-    <CourseEditor client:only courseId={id} />
+    <CourseEditor client:only="react" courseId={id} />
   </main>
 </Layout>
 

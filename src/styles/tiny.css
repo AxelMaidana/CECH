@@ -1,0 +1,48 @@
+/* Estilo básico para la imagen redimensionable */
+.resizable-img {
+    position: relative;
+    display: inline-block;
+    cursor: se-resize;
+  }
+  
+  .resizable-img img {
+    width: 100%;
+    height: auto;
+    display: block;
+    cursor: pointer;
+  }
+  
+  /* Puntos de redimensionamiento en los bordes y esquinas */
+  .resizable-img::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+  }
+  
+  .resizable-img.top-left::after {
+    top: -4px;
+    left: -4px;
+    cursor: nwse-resize;
+  }
+  
+  .resizable-img.top-right::after {
+    top: -4px;
+    right: -4px;
+    cursor: nesw-resize;
+  }
+  
+  .resizable-img.bottom-left::after {
+    bottom: -4px;
+    left: -4px;
+    cursor: nesw-resize;
+  }
+  
+  .resizable-img.bottom-right::after {
+    bottom: -4px;
+    right: -4px;
+    cursor: nwse-resize;
+  }
+  

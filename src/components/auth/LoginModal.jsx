@@ -19,6 +19,8 @@ const LoginModal = () => {
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       const userData = userDoc.data();
 
+      // Store user role in local storage
+      localStorage.setItem('userRole', userData.role || 'user');
 
       // Redirect based on user role
       window.location.href = '/';
@@ -52,7 +54,7 @@ const LoginModal = () => {
       className="flex justify-center items-center fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50" 
       onClick={handleOverlayClick}
     >
-      <div className="bg-white text-customBlack p-6 sm:p-8 md:p-10 rounded-3xl shadow-lg max-w-md w-full transform transition-all duration-300 scale-100 opacity-100 translate-y-0 relative animate-fadeIn">
+      <div className="bg-white text-customBlack p-6 mx-2 sm:p-8 md:p-10 rounded-3xl shadow-lg max-w-md w-full transform transition-all duration-300 scale-100 opacity-100 translate-y-0 relative animate-fadeIn">
         
         {/* Icono de cerrar */}
         <svg
@@ -67,25 +69,29 @@ const LoginModal = () => {
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
 
-        <h2 className="text-2xl sm:text-3xl text-center font-bold mt-2 mb-6">INICIAR SESIÓN</h2>
 
-        <form onSubmit={handleLogin} className='flex flex-col gap-y-2 text-left'>
+        <form onSubmit={handleLogin} className='flex flex-col py-4 gap-y-2 text-left'>
+        <h2 className="text-3xl text-customBlue sm:text-4xl text-center font-bold mt-2 mb-6">INICIAR SESIÓN</h2>
+          <div className='pb-3'>
           <label htmlFor="email" className="block text-lg font-bold">Correo Electrónico</label>
-          <input
-            type="email"
-            placeholder="Correo electrónico"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border border-customBlack rounded-2xl w-full p-2"
-          />
-          <label htmlFor="password" className="block text-lg font-bold">Contraseña</label>
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border border-customBlack rounded-2xl w-full p-2"
-          />
+              <input
+                type="email"
+                placeholder="Correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="border outline-none border-customBlack rounded-2xl w-full p-2"
+              />
+          </div>
+          <div className='pb-3'>
+              <label htmlFor="password" className="block text-lg font-bold">Contraseña</label>
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="border outline-none border-customBlack rounded-2xl w-full p-2"
+              />
+          </div>
 
           <div className='items-center justify-center flex mt-2'>
             <button type="submit" className="bg-customBlue transition duration-300 hover:scale-105 text-white text-sm font-semibold px-6 py-3 rounded-xl w-fit">

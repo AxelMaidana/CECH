@@ -1,0 +1,56 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { db } from '../../../firebase/client';
+import { doc, getDoc } from 'firebase/firestore';
+import Pastilla from '../../../components/ActAcademicas/detalle/Pastilla.astro';
+import ButtonEditNoticia from '../../../components/noticias/ButtonEditNoticia';
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.params;
+const noticiaDoc = doc(db, 'noticias', id);
+const noticiaData = await getDoc(noticiaDoc);
+
+const imageUrl = noticiaData.data()?.imageUrl;
+---
+
+<Layout title={noticiaData.data()?.title}>
+    <div class="w-full my-auto">
+      <!-- Titulo con diseño -->
+        <div class="flex justify-between items-center">
+            <Pastilla title="Información del curso" />
+            <ButtonEditNoticia id={id} client:only="react" />
+        </div>
+
+      <div class="bg-white rounded-lg max-w-7xl mx-auto px-2 mb-20">
+        <div class="relative mb-4">
+          <!-- Fecha sobre la imagen -->
+          <div class="absolute top-[-20px] left-1/2 transform -translate-x-1/2 px-4 py-2 text-md font-semibold bg-[#187498] text-white rounded-full outline-none z-10">
+            {noticiaData.data()?.date}
+          </div>
+          <!-- Imagen -->
+          <img 
+            src={imageUrl}
+            alt={noticiaData.data()?.title}
+            class="w-full h-[400px] object-cover rounded-t-3xl"
+          />
+        </div>
+
+        <!-- Título de la noticia -->
+        <div class="mb-4">
+          <h1 class="text-5xl text-customBlue line-clamp-2 font-bold">
+            {noticiaData.data()?.title}
+          </h1>
+        </div>
+
+        <!-- Descripción -->
+            <div class="mt-6 w-full mx-auto">
+                <div class="prose w-full max-w-6xl" set:html={noticiaData.data()?.description}></div>
+            </div>
+    
+      </div>
+    </div>
+</Layout>
+
