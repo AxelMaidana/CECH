@@ -79,7 +79,7 @@ export default function EditorComponent({ pageId }: EditorComponentProps) {
     );
   }
 
-  const apiKey = import.meta.env.PUBLIC_TINYMCE_API_KEY;
+  const apiKey = import.meta.env.PUBLIC_TINYMCE_API_KEY || '0rlylg7lwhml61g6ncx4rxhj7du8fblukvjr3ihjsxvsembn';
  
   return (
     <div className="min-h-screen justify-center items-center w-full"> {/* Cambia w-full o ajusta según el ancho deseado */}
