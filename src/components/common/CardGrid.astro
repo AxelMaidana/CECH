@@ -22,7 +22,7 @@ const posts = querySnapshot.docs.map(doc => ({
       modality={post.modality}
       hours={post.hours}
       id={post.id}
-      client:only
+      client:only="react"
     />
   ))}
 </div>

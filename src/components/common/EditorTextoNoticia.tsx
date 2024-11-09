@@ -89,10 +89,12 @@ export default function EditorComponent({ noticiaId, onDescriptionChange }: Edit
     );
   }
 
+  const apiKey = import.meta.env.TINYMCE_API_KEY || '0rlylg7lwhml61g6ncx4rxhj7du8fblukvjr3ihjsxvsembn';
+
   return (
     <div className="min-h-screen justify-center items-center w-full">
       <Editor
-        apiKey="0rlylg7lwhml61g6ncx4rxhj7du8fblukvjr3ihjsxvsembn"
+        apiKey={apiKey}
         init={{
           height: 500,
           width: '100%',

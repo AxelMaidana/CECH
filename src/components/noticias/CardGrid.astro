@@ -19,7 +19,7 @@ const noticias = querySnapshot.docs.map(doc => ({
       imageUrl={noticia.imageUrl}
       date={noticia.date}
       id={noticia.id}
-      client:only
+      client:only="react"
     />
   ))}
 </div>
