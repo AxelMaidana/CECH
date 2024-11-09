@@ -89,7 +89,7 @@ export default function EditorComponent({ noticiaId, onDescriptionChange }: Edit
     );
   }
 
-  const apiKey = import.meta.env.TINYMCE_API_KEY || '0rlylg7lwhml61g6ncx4rxhj7du8fblukvjr3ihjsxvsembn';
+  const apiKey = import.meta.env.PUBLIC_TINYMCE_API_KEY;
 
   return (
     <div className="min-h-screen justify-center items-center w-full">
