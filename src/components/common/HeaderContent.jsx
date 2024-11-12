@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { auth, db } from '../../firebase/client';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
+import LoginModal from '../auth/LoginModal'; // Asegúrate de importar el modal
 
 export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginButtonText }) {
   const [user, setUser] = useState(null);
@@ -20,7 +21,7 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
         setUser(null);
         setUserData(null);
       }
-      setLoading(false); // Detiene el estado de carga
+      setLoading(false); // Detener estado de carga
     });
 
     const handleClickOutside = (event) => {
@@ -37,11 +38,6 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
     };
   }, []);
 
-  const handleLogin = () => {
-    const loginModal = document.getElementById('login-modal');
-    loginModal?.classList.remove('hidden');
-  };
-
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -56,7 +52,7 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
   };
 
   return (
-    <header className="bg-customBlue text-white py-2 ">
+    <header className="bg-customBlue text-white py-2">
       <div className="container flex flex-row justify-between items-center mx-auto px-2 space-x-0">
         <div className="flex items-center text-left md:flex-row md:items-center gap-2 md:gap-4">
           <a href="/">
@@ -75,21 +71,17 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
 
         <div className="flex items-center my-auto">
           {loading ? (
-                <div className="flex items-center space-x-3 mb-auto">
-                    {/* Placeholder para el nombre */}
-                    <div className='hidden lg:visible'>
-                        <div className="bg-gray-300 animate-pulse rounded-md h-5 w-16 mb-1"></div>
-                        {/* Placeholder para el rol */}
-                        <div className="bg-gray-300 animate-pulse rounded-md h-3 w-20"></div>
-                    </div>
-                    
-                    {/* Placeholder para la imagen de perfil */}
-                    <div className="bg-gray-300 animate-pulse rounded-full h-16 w-16"></div>
+            <div className="flex items-center space-x-3 mb-auto">
+              <div className="hidden lg:visible">
+                <div className="bg-gray-300 animate-pulse rounded-md h-5 w-16 mb-1"></div>
+                <div className="bg-gray-300 animate-pulse rounded-md h-3 w-20"></div>
               </div>
+              <div className="bg-gray-300 animate-pulse rounded-full h-16 w-16"></div>
+            </div>
           ) : !user ? (
             <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2">
               <button
-                onClick={handleLogin}
+                onClick={() => document.getElementById('login-modal').classList.remove('hidden')}
                 className="bg-customCyan hover:scale-105 transition duration-300 ease-in-out border-[3px] border-customCyan rounded-full text-customBlack font-extrabold text-[9px] sm:text-xs md:text-sm lg:text-sm px-2 py-1 h-7 w-26 sm:h-8 sm:w-32 md:h-9 md:w-36 lg:h-9 lg:w-40"
               >
                 {loginButtonText}
@@ -140,6 +132,8 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
           )}
         </div>
       </div>
+
+      <LoginModal /> {/* Mostrar modal de login */}
     </header>
   );
 }

@@ -10,21 +10,13 @@ const LoginModal = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(''); // Clear any previous errors
+    setError(''); // Limpiar errores previos
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Fetch user data from Firestore
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      const userData = userDoc.data();
-
-      // Store user role in local storage
-      localStorage.setItem('userRole', userData.role || 'user');
-
-      // Redirect based on user role
-      window.location.href = '/';
-
+      // Verificar y obtener datos del usuario desde Firestore
+      await checkLogin(user.uid);
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       if (error.code === 'auth/invalid-credential') {
@@ -35,13 +27,31 @@ const LoginModal = () => {
     }
   };
 
-  // Función para cerrar el modal
+  // Función para verificar los permisos del usuario
+  const checkLogin = async (userId) => {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        
+        // Guardar permisos en localStorage o estado
+        localStorage.setItem('userPermissions', JSON.stringify(userData.permissions || {}));
+        window.location.href = '/';
+      } else {
+        setError('El usuario no tiene permisos asignados.');
+      }
+    } catch (error) {
+      console.error('Error al obtener datos de usuario:', error);
+      setError('Ha ocurrido un error al verificar los datos del usuario.');
+    }
+  };
+  
+
   const closeModal = () => {
     document.getElementById('login-modal').classList.add('hidden');
-    setError(''); // Clear error when closing modal
+    setError('');
   };
 
-  // Manejar el clic fuera del modal
   const handleOverlayClick = (e) => {
     if (e.target.id === 'login-modal') {
       closeModal();
@@ -56,7 +66,6 @@ const LoginModal = () => {
     >
       <div className="bg-white text-customBlack p-6 mx-2 sm:p-8 md:p-10 rounded-3xl shadow-lg max-w-md w-full transform transition-all duration-300 scale-100 opacity-100 translate-y-0 relative animate-fadeIn">
         
-        {/* Icono de cerrar */}
         <svg
           onClick={closeModal}
           xmlns="http://www.w3.org/2000/svg"
@@ -69,28 +78,27 @@ const LoginModal = () => {
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
 
-
         <form onSubmit={handleLogin} className='flex flex-col py-4 gap-y-2 text-left'>
-        <h2 className="text-3xl text-customBlue sm:text-4xl text-center font-bold mt-2 mb-6">INICIAR SESIÓN</h2>
+          <h2 className="text-3xl text-customBlue sm:text-4xl text-center font-bold mt-2 mb-6">INICIAR SESIÓN</h2>
           <div className='pb-3'>
-          <label htmlFor="email" className="block text-lg font-bold">Correo Electrónico</label>
-              <input
-                type="email"
-                placeholder="Correo electrónico"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border outline-none border-customBlack rounded-2xl w-full p-2"
-              />
+            <label htmlFor="email" className="block text-lg font-bold">Correo Electrónico</label>
+            <input
+              type="email"
+              placeholder="Correo electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border outline-none border-customBlack rounded-2xl w-full p-2"
+            />
           </div>
           <div className='pb-3'>
-              <label htmlFor="password" className="block text-lg font-bold">Contraseña</label>
-              <input
-                type="password"
-                placeholder="Contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="border outline-none border-customBlack rounded-2xl w-full p-2"
-              />
+            <label htmlFor="password" className="block text-lg font-bold">Contraseña</label>
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="border outline-none border-customBlack rounded-2xl w-full p-2"
+            />
           </div>
 
           <div className='items-center justify-center flex mt-2'>

@@ -3,15 +3,16 @@
 import Layout from '../../layouts/Layout.astro';
 import UserTable from '../../components/admin/UserTable';
 import RouteGuard from '../../components/auth/ProtectedRole';
-import { Route } from 'lucide-react';
 ---
 
 <RouteGuard client:only="react">
   <Layout title="Dashboard de Admin">
     <main class="container mx-auto mt-8 p-4 h-screen">
       <h1 class="text-3xl font-bold mb-4">Dashboard de Admin</h1>
-      <UserTable client:load />
+      <UserTable client:only="react" />
     </main>
   </Layout>
 </RouteGuard>
+
+
 
