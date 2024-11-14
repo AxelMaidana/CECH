@@ -1,7 +1,6 @@
 ---
 //barra de busqueda a la derecha con pastilla de texto a la izquierda
-import CreateCourseButton from '../common/CreateCourseButton';
-import RoleCondition from '../../components/common/CondicionPorRol';
+import Vista from '../views/VistaBotonCrearCurso';
 ---
 
 <div class="flex items-center justify-between pt-8 pr-8">
@@ -12,9 +11,9 @@ import RoleCondition from '../../components/common/CondicionPorRol';
       </h3>
     </div>
     <div class="flex items-center">
-      <RoleCondition client:only="react">
-        <CreateCourseButton client:only="react" />
-      </RoleCondition>
+
+        <Vista client:only="react" />
+
     <!-- Barra de búsqueda a la derecha -->
     <div class="relative flex items-center ml-4 border-2 border-customGreen rounded-3xl">
       

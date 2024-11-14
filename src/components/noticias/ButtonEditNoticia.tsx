@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../firebase/client';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
+import { usePermissions } from '../auth/PermissionsProvider';
 
 interface Props {
   id: string;
@@ -10,6 +11,7 @@ interface Props {
 export default function ContentHeader({ id }: Props) {    
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
+  const { permissions, loading, userId } = usePermissions();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -26,10 +28,14 @@ export default function ContentHeader({ id }: Props) {
     return () => unsubscribe(); // para limpiar el listener cuando el componente se desmonte
   }, []);
 
+  if (loading) return <div>Cargando...</div>;
   return (
-    userData?.role === 'admin' ? 
-    <button className="hover:scale-105 transition-all duration-300 ease-in-out mr-56">
-      <a href={`./${id}/editNoticia`} className="font-bold bg-customBlue text-white px-4 py-2 rounded-xl">Editar noticia</a>
-    </button> : null
+    permissions.editarNoticias ?  (
+      <button className="hover:scale-105 transition-all duration-300 ease-in-out mr-56">        
+        <a href={`./${id}/editNoticia`} className="font-bold bg-customBlue text-white px-4 py-2 rounded-xl">Editar noticia</a>
+      </button>
+    ) : (
+      null
+    )
   );
 }

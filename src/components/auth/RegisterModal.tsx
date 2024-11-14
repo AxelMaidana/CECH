@@ -1,8 +1,7 @@
-import React,  { useState } from 'react';
+import React, { useState } from 'react';
 import { auth, db } from '../../firebase/client';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import {getAuth ,createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
-import { createUserWithoutSignIn } from '../../firebase/client';
 
 // Abre el modal
 export const initializeModalMiembro = (modalId) => {
@@ -31,70 +30,80 @@ const RegisterModal = () => {
   const [lugarDeOrigen, setLugarDeOrigen] = useState('');
   const [infoExtra, setInfoExtra] = useState('');
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    try {
-      const userCredential = await createUserWithoutSignIn({ email, password });
-    await updateProfile(userCredential.user, { displayName: name });
-      
-      // Define los permisos predeterminados
-      const permisosPredeterminados = {
-        verCursos: false,
-        editarCursos: false,
-        agregarCurso: false,
-        eliminarCurso: false,
-        verNoticias: false,
-        editarNoticias: false,
-        agregarNoticia: false,
-        eliminarNoticia: false,
-        verMatriculados: false,
-        agregarMatriculado: false,
-        editarPanelTramites: false,
-        editarPanelDictamenes: false,
-        editarPanelInfoInstitucional: false,
-        agregarMiembro: false,
-        eliminarMiembro: false,
-        editarMiembro: false,
-        modificarPermisos: false,
-      };
+const handleRegister = async (e) => {
+  e.preventDefault();
 
-      // Guarda los datos en Firestore
-      await setDoc(doc(db, 'users', userCredential.user.uid), {
-        name,
-        email,
-        birthday,
-        lastname,
-        role,
-        dni,
-        matricula,
-        lugarDeOrigen,
-        infoExtra,
-        permissions: permisosPredeterminados,
-      }, { merge: true });
+  try {
+    // Crea el nuevo usuario en Firebase sin loguearse automáticamente
+    const userCredential = await createUserWithEmailAndPassword(getAuth(), email, password);
+    const user = userCredential.user;
 
-      closeModalMiembro('register-modal');
-      
-      setEmail('');
-      setPassword('');
-      setName('');
-      setBirthday('');
-      setLastname('');
-      setRole('');
-      setDni('');
-      setMatricula('');
-      setLugarDeOrigen('');
-      setInfoExtra('');
+    // Actualiza el perfil del nuevo usuario (por ejemplo, el nombre)
+    await updateProfile(user, { displayName: name });
 
-      window.location.reload();
-    } catch (error) {
-      console.error('Error al registrarse:', error);
-      alert(`Error al registrarse: ${error.message}`);
-    }
-  };
+    // Define los permisos predeterminados para el nuevo usuario
+    const permisosPredeterminados = {
+      verCursos: false,
+      editarCursos: false,
+      agregarCurso: false,
+      eliminarCurso: false,
+      verNoticias: false,
+      editarNoticias: false,
+      agregarNoticia: false,
+      eliminarNoticia: false,
+      verMatriculados: false,
+      agregarMatriculado: false,
+      editarPanelTramites: false,
+      editarPanelDictamenes: false,
+      editarPanelInfoInstitucional: false,
+      agregarMiembro: false,
+      eliminarMiembro: false,
+      editarMiembro: false,
+      modificarPermisos: false,
+    };
+
+    // Guarda los datos del nuevo usuario en Firestore
+    await setDoc(doc(db, 'users', user.uid), {
+      name,
+      email,
+      birthday,
+      lastname,
+      role,
+      dni,
+      matricula,
+      lugarDeOrigen,
+      infoExtra,
+      permissions: permisosPredeterminados,
+    });
+
+    // Cierra el modal
+    closeModalMiembro('register-modal');
+
+    // Limpia los campos del formulario
+    setEmail('');
+    setPassword('');
+    setName('');
+    setBirthday('');
+    setLastname('');
+    setRole('');
+    setDni('');
+    setMatricula('');
+    setLugarDeOrigen('');
+    setInfoExtra('');
+
+    // Actualiza el estado o recarga la página si es necesario
+    window.location.reload();
+
+  } catch (error) {
+    console.error('Error al registrarse:', error);
+    alert(`Error al registrarse: ${error.message}`);
+  }
+};
+
+  
 
   return (
     <div id="register-modal" className="flex justify-center items-center fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-      
       <div className="bg-white text-customBlack p-6 mx-2 sm:p-8 md:p-10 rounded-3xl shadow-lg max-w-md w-full transform transition-all duration-300 scale-100 opacity-100 translate-y-0 relative animate-fadeIn">
         
         <svg

@@ -3,7 +3,7 @@ import Layout from '../../../layouts/Layout.astro';
 import { db } from '../../../firebase/client';
 import { doc, getDoc } from 'firebase/firestore';
 import Pastilla from '../../../components/ActAcademicas/detalle/Pastilla.astro';
-import ButtonEditNoticia from '../../../components/noticias/ButtonEditNoticia';
+import VistaBotonEditarNoticia from '../../../components/views/VistaBotonEditarNoticia';
 
 interface Props {
   id: string;
@@ -21,7 +21,7 @@ const imageUrl = noticiaData.data()?.imageUrl;
       <!-- Titulo con diseño -->
         <div class="flex justify-between items-center">
             <Pastilla title="Información del curso" />
-            <ButtonEditNoticia id={id} client:only="react" />
+            <VistaBotonEditarNoticia id={id} client:only="react" />
         </div>
 
       <div class="bg-white rounded-lg max-w-7xl mx-auto px-2 mb-20">

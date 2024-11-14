@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Menu, Plus, Edit2, Check, ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
-import { collection, query, onSnapshot, setDoc, doc, deleteDoc, getDocs, where, getDoc } from 'firebase/firestore'
+import { collection, query, onSnapshot, setDoc, doc, deleteDoc, getDocs, where, getDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase/client'
 
 type MenuItem = {
@@ -68,7 +68,7 @@ export default function Component() {
 
   const addNewPage = async (parentId: string | null) => {
     if (!newPageTitle.trim()) return
-    
+
     const path = newPageTitle.toLowerCase().replace(/\s+/g, '-')
     const id = parentId ? `${parentId}-${path}` : path
     const newItem: MenuItem = {
@@ -96,65 +96,18 @@ export default function Component() {
       if (!updatedItem) return
 
       const newPath = editedTitle.toLowerCase().replace(/\s+/g, '-')
-      const newId = updatedItem.parentId ? `${updatedItem.parentId}-${newPath}` : newPath
-      const newPathAttachment = `snippet-${newId}.txt`
       const newFullPath = updatedItem.parentId ? `${updatedItem.parentId}/${newPath}` : newPath
 
-      // Get the content of the old page
-      const oldPageDoc = await getDoc(doc(db, 'pages', pageId))
-      const oldPageContent = oldPageDoc.exists() ? oldPageDoc.data().content : ''
-
-      // Update the menu item
-      await setDoc(doc(db, 'menu', newId), {
-        id: newId,
+      // Actualiza el título y la ruta en el documento existente
+      await updateDoc(doc(db, 'menu', pageId), {
         title: editedTitle,
         path: newFullPath,
-        parentId: updatedItem.parentId,
-        pathAttachment: newPathAttachment
+        pathAttachment: `snippet-${pageId}.txt` // Actualiza si es necesario
       })
 
-      // Update the page content with the new ID, keeping the old content
-      await setDoc(doc(db, 'pages', newId), { content: oldPageContent })
-
-      // Delete the old documents only after creating the new ones
-      await deleteDoc(doc(db, 'menu', pageId))
-      await deleteDoc(doc(db, 'pages', pageId))
-
-      // Update all child items with the new parent ID
-      const updateChildItems = async (oldParentId: string, newParentId: string) => {
-        const childQuery = query(collection(db, 'menu'), where('parentId', '==', oldParentId))
-        const childSnapshot = await getDocs(childQuery)
-        
-        for (const childDoc of childSnapshot.docs) {
-          const childData = childDoc.data() as MenuItem
-          const childNewId = `${newParentId}-${childData.path.split('/').pop()}`
-          const childNewPath = `${newFullPath}/${childData.path.split('/').pop()}`
-          
-          // Get the content of the old child page
-          const oldChildPageDoc = await getDoc(doc(db, 'pages', childDoc.id))
-          const oldChildPageContent = oldChildPageDoc.exists() ? oldChildPageDoc.data().content : ''
-
-          // Create new menu item for the child
-          await setDoc(doc(db, 'menu', childNewId), {
-            ...childData,
-            id: childNewId,
-            path: childNewPath,
-            parentId: newParentId
-          })
-
-          // Create new page document for the child with the old content
-          await setDoc(doc(db, 'pages', childNewId), { content: oldChildPageContent })
-
-          // Delete old documents for the child
-          await deleteDoc(doc(db, 'menu', childDoc.id))
-          await deleteDoc(doc(db, 'pages', childDoc.id))
-          
-          // Recursively update grandchildren
-          await updateChildItems(childDoc.id, childNewId)
-        }
-      }
-
-      await updateChildItems(pageId, newId)
+      // Si tienes una colección de 'pages', también puedes actualizar allí si es necesario
+      // Por ejemplo, si necesitas actualizar la ruta del contenido:
+      // await updateDoc(doc(db, 'pages', pageId), { /* campos a actualizar */ })
 
       setEditingPageId(null)
       setEditedTitle('')
@@ -165,17 +118,17 @@ export default function Component() {
 
   const deletePage = async (pageId: string) => {
     try {
-      // Delete the page from the menu
+      // Eliminar la página del menú
       await deleteDoc(doc(db, 'menu', pageId))
 
-      // Delete the page content
+      // Eliminar el contenido de la página
       await deleteDoc(doc(db, 'pages', pageId))
 
-      // Find and delete all child pages recursively
+      // Eliminar todas las subpáginas recursivamente
       const deleteChildPages = async (parentId: string) => {
         const childQuery = query(collection(db, 'menu'), where('parentId', '==', parentId))
         const childSnapshot = await getDocs(childQuery)
-        
+
         for (const childDoc of childSnapshot.docs) {
           const childId = childDoc.id
           await deleteDoc(doc(db, 'menu', childId))
@@ -198,7 +151,7 @@ export default function Component() {
 
   const renderMenuItem = (item: MenuItem, depth: number = 0) => {
     const children = getChildItems(item.id)
-    
+
     return (
       <li key={item.id} className={`relative group ${depth === 0 ? 'flex-grow text-center border-r border-black border-opacity-20 last:border-0' : ''}`}>
         <a href={`/${item.path.replace(/\//g, '-')}`} className={`block transform hover:scale-105 hover:underline transition-transform duration-100 ${depth === 0 ? 'text-white' : 'text-white'} text-xs whitespace-nowrap 2xl:text-sm py-1 px-2`}>
@@ -222,24 +175,8 @@ export default function Component() {
             </button>
           </div>
         )}
-        {editingPageId === item.id ? (
-          <div className="absolute z-50 mt-2 w-64 bg-customGreen rounded-md shadow-lg p-4">
-            <input
-              type="text"
-              value={editedTitle}
-              onChange={(e) => setEditedTitle(e.target.value)}
-              className="w-full px-3 py-2 border rounded-md text-black"
-              placeholder="Edit title"
-            />
-            <button
-              onClick={() => updatePageTitle(item.id)}
-              className="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            >
-              <Check className="inline-block w-4 h-4 mr-2" />
-              Save
-            </button>
-          </div>
-        ) : (
+        {/* Solo muestra los botones de edición y eliminación para las subpáginas */}
+        {item.parentId && (
           <div className="absolute top-0 right-0 mt-1 mr-1 space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <button
               onClick={(e) => {
@@ -262,17 +199,62 @@ export default function Component() {
             </button>
           </div>
         )}
+        {/* Formulario de edición */}
+        {editingPageId === item.id && (
+          <div className="absolute z-50 mt-2 w-64 bg-customGreen rounded-md shadow-lg p-4">
+            <input
+              type="text"
+              value={editedTitle}
+              onChange={(e) => setEditedTitle(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md text-black"
+              placeholder="Edit title"
+            />
+            <button
+              onClick={() => updatePageTitle(item.id)}
+              className="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center"
+            >
+              <Check className="inline-block w-4 h-4 mr-2" />
+              Save
+            </button>
+          </div>
+        )}
+        {/* Confirmación de eliminación */}
+        {showDeleteConfirm === item.id && (
+          <div className="absolute z-50 mt-2 w-64 bg-white rounded-md shadow-lg p-4">
+            <p className="text-gray-800 mb-4">¿Estás seguro que quieres borrar esta página y todas sus subpáginas?</p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => deletePage(item.id)}
+                className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+              >
+                Borrar
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="px-3 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
       </li>
     )
   }
 
-  const renderMobileMenuItem = (item: MenuItem, depth = 0) => {
+  const renderMobileMenuItem = (item: MenuItem, depth: number = 0) => {
     const children = getChildItems(item.id)
-    
+
     return (
       <li key={item.id}>
-        <div className={`flex items-center justify-between py-4 px-6 hover:bg-green-600 rounded-lg hover:scale-105 transition-all duration-300 ease-in-out ${depth > 0 ? 'ml-4' : ''}`}>
-          <a href={`/${item.path.replace(/\//g, '-')}`} onClick={toggleMenu} className="flex-grow">
+        <div className={`flex items-center justify-between py-4 px-6 hover:bg-green-600 rounded-lg transition-all duration-300 ease-in-out ${depth > 0 ? 'ml-4' : ''}`}>
+          <a
+            href={`/${item.path.replace(/\//g, '-')}`}
+            onClick={() => {
+              toggleMenu()
+            }}
+            className="flex-grow"
+          >
             {item.title}
           </a>
           {children.length > 0 && (
@@ -284,32 +266,30 @@ export default function Component() {
             {children.map(child => renderMobileMenuItem(child, depth + 1))}
           </ul>
         )}
-        <div className="flex justify-between px-6 py-2">
-          <button
-            onClick={() => setShowAddForm(item.id)}
-            className={`text-sm text-white hover:bg-green-600 ${depth > 0 ? 'ml-4' : ''}`}
-          >
-            <Plus className="inline-block w-4 h-4 mr-2" />
-            Add Subpage
-          </button>
-          <div className="space-x-2">
+        {/* Solo muestra los botones de edición y eliminación para las subpáginas en móvil */}
+        {item.parentId && (
+          <div className="flex space-x-2 ml-6 mb-2">
             <button
               onClick={() => {
                 setEditingPageId(item.id)
                 setEditedTitle(item.title)
+                toggleMenu() // Opcional: cerrar el menú al editar
               }}
               className="text-white"
             >
               <Edit2 className="w-4 h-4" />
             </button>
             <button
-              onClick={() => setShowDeleteConfirm(item.id)}
+              onClick={() => {
+                setShowDeleteConfirm(item.id)
+                toggleMenu() // Opcional: cerrar el menú al eliminar
+              }}
               className="text-white"
             >
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        )}
       </li>
     )
   }
@@ -322,7 +302,7 @@ export default function Component() {
     <nav className="bg-customGreen text-sm font-bold flex self-end md:justify-center md:items-center rounded-l-xl md:rounded-none md:rounded-b-xl shadow-lg w-8 md:w-full z-40 relative">
       <div className="container mx-auto py-1 flex justify-center items-center">
         <button
-          className="block md:hidden text-white  focus:outline-none"
+          className="block md:hidden text-white focus:outline-none"
           onClick={toggleMenu}
         >
           <Menu className="w-6 h-6" />
@@ -330,17 +310,17 @@ export default function Component() {
 
         <ul className="hidden md:flex md:justify-between md:w-full text-white space-x-1">
           {allMenuItems.filter(item => item.parentId === null).map(item => renderMenuItem(item))}
-            {/* 
-            <li className="flex-grow text-center border-r border-black border-opacity-20 last:border-0">
-              <button
-                onClick={() => setShowAddForm('root')}
-                className="block w-full transform hover:scale-105 hover:underline transition-transform duration-100 text-white text-xs whitespace-nowrap 2xl:text-sm py-1 px-2"
-              >
-                <Plus className="inline-block w-4 h-4 mr-2" />
-                Add Page
-              </button> 
-            </li>
-          */} 
+          {/* 
+          <li className="flex-grow text-center border-r border-black border-opacity-20 last:border-0">
+            <button
+              onClick={() => setShowAddForm('root')}
+              className="block w-full transform hover:scale-105 hover:underline transition-transform duration-100 text-white text-xs whitespace-nowrap 2xl:text-sm py-1 px-2"
+            >
+              <Plus className="inline-block w-4 h-4 mr-2" />
+              Add Page
+            </button> 
+          </li>
+          */}
         </ul>
       </div>
 
@@ -349,7 +329,7 @@ export default function Component() {
       )}
 
       <div
-        className={`fixed top-0 right-0 h-screen  bg-customGreen w-full max-w-[300px] shadow-lg transform ${
+        className={`fixed top-0 right-0 h-screen bg-customGreen w-full max-w-[300px] shadow-lg transform ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         } transition-transform duration-300 ease-in-out z-50 rounded-l-2xl overflow-y-auto`}
       >
@@ -361,27 +341,19 @@ export default function Component() {
         </button>
         <ul className="mt-16 text-white space-y-1">
           {allMenuItems.filter(item => item.parentId === null).map(item => renderMobileMenuItem(item))}
-          <li>
-            <button
-              onClick={() => setShowAddForm('root')}
-              className="flex items-center py-4 px-6 hover:bg-green-600 rounded-lg hover:scale-105 transition-all duration-300 ease-in-out w-full text-left"
-            >
-              <Plus className="w-6 h-6 mr-3" />
-              Add Page
-            </button>
-          </li>
         </ul>
       </div>
 
+      {/* Formulario de Añadir Página */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-customGreen rounded-md shadow-lg p-4  w-64">
+          <div className="bg-customGreen rounded-md shadow-lg p-4 w-64">
             <input
               type="text"
               value={newPageTitle}
               onChange={(e) => setNewPageTitle(e.target.value)}
               className="w-full px-3 py-2 border rounded-md text-gray-700"
-              placeholder="Page title"
+              placeholder="Nombre de la subpágina"
             />
             <div className="mt-2 flex justify-end gap-2">
               <button
@@ -401,10 +373,11 @@ export default function Component() {
         </div>
       )}
 
+      {/* Confirmación de Eliminación */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-md shadow-lg p-4 w-64">
-            <p className="text-gray-800 mb-4">Estas seguro que quieres borrar esta página y todas sus subpáginas?</p>
+            <p className="text-gray-800 mb-4">¿Estás seguro que quieres borrar esta subpágina</p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => deletePage(showDeleteConfirm)}
@@ -414,6 +387,39 @@ export default function Component() {
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(null)}
+                className="px-3 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulario de Edición */}
+      {editingPageId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-customGreen rounded-md shadow-lg p-4 w-64">
+            <input
+              type="text"
+              value={editedTitle}
+              onChange={(e) => setEditedTitle(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md text-gray-700"
+              placeholder="Edita el nombre de la subpágina"
+            />
+            <div className="mt-2 flex justify-end gap-2">
+              <button
+                onClick={() => updatePageTitle(editingPageId)}
+                className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center"
+              >
+                <Check className="inline-block w-4 h-4 mr-2" />
+                Guardar
+              </button>
+              <button
+                onClick={() => {
+                  setEditingPageId(null)
+                  setEditedTitle('')
+                }}
                 className="px-3 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600"
               >
                 Cancelar

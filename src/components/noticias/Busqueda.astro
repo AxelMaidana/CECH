@@ -1,7 +1,6 @@
 ---
 //barra de busqueda a la derecha con pastilla de texto a la izquierda
-import CreateNoticiaButton from '../common/CreateNoticiaButton';
-import RoleCondition from '../../components/common/CondicionPorRol';
+import VistaBotonCrearNoticia from '../../components/views/VistaBotonCrearNoticia';
 ---
 
 <div class="flex items-center justify-between pt-8 pr-8">
@@ -13,9 +12,7 @@ import RoleCondition from '../../components/common/CondicionPorRol';
     </div>
     <div class="flex items-center">
       <div class="">
-        <RoleCondition client:only="react">
-          <CreateNoticiaButton client:only="react" />
-        </RoleCondition>
+        <VistaBotonCrearNoticia client:only="react" />
       </div>
     <!-- Barra de búsqueda a la derecha -->
     <div class="relative flex items-center ml-4 border-2 border-customGreen rounded-3xl">

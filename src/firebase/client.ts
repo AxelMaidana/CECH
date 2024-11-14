@@ -21,6 +21,7 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 const functions = getFunctions(app);
 export const createUserWithoutSignIn = httpsCallable(functions, 'createUserWithoutSignIn');
+
 //funcion para obtener el usuario actual
 export const getCurrentUser = () => {
   return new Promise((resolve, reject) => {

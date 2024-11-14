@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase/client';
 import { openModalMiembro, closeModalMiembro, initializeModalMiembro } from '../auth/RegisterModal';
+import { usePermissions } from '../auth/PermissionsProvider';
 
 // UI Components
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -39,13 +40,13 @@ interface TableProps {
 }
 
 const Table: React.FC<TableProps> = ({ children }) => (
-  <div className="overflow-hidden rounded-lg shadow-custom">
+  <div className="xl:overflow-hidden overflow-x-auto rounded-lg shadow-custom">
     <table className="min-w-full divide-y-[3px] divide-black/10 border-collapse separate">{children}</table>
   </div>
 );
 
 const TableHeader: React.FC<TableProps> = ({ children }) => (
-  <thead className="bg-black/5">{children}</thead>
+  <thead className="bg-black/5 text-center">{children}</thead>
 );
 
 const TableBody: React.FC<TableProps> = ({ children }) => (
@@ -55,7 +56,7 @@ const TableBody: React.FC<TableProps> = ({ children }) => (
 const TableRow: React.FC<TableProps> = ({ children }) => <tr>{children}</tr>;
 
 const TableHead: React.FC<TableProps> = ({ children }) => (
-  <th scope="col" className="px-6 py-3 text-left text-sm font-base text-customBlack tracking-wider">{children}</th>
+  <th scope="col" className="px-6 py-3 text-sm font-base text-customBlack tracking-wider text-center">{children}</th>
 );
 
 const TableCell: React.FC<TableProps & { colSpan?: number }> = ({ children, colSpan }) => (
@@ -70,6 +71,8 @@ interface User {
   lugarDeOrigen: string;
   infoExtra: string;
   profileImageUrl: string;
+  permissions: any;
+  role: string;
 }
 
 const ITEMS_PER_PAGE = 3;
@@ -81,13 +84,20 @@ const UserTable = () => {
   const [modalUser, setModalUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [permissions, setPermissions] = useState<any>({});
+  const [hasChanges, setChanges] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const { permissions: userPermissions } = usePermissions();
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "users"));
+        const querySnapshot = await getDocs(collection(db, 'users'));
         const usersData: User[] = [];
-        querySnapshot.forEach(doc => {
+        querySnapshot.forEach((doc) => {
           const data = doc.data();
           usersData.push({
             id: doc.id,
@@ -97,11 +107,13 @@ const UserTable = () => {
             lugarDeOrigen: data.lugarDeOrigen || '',
             infoExtra: data.infoExtra || '',
             profileImageUrl: data.profileImageUrl || '',
+            permissions: data.permissions || {},
+            role: data.role || '',
           });
         });
         setUsers(usersData);
       } catch (error) {
-        console.error("Error fetching users: ", error);
+        console.error('Error fetching users: ', error);
       } finally {
         setLoading(false);
       }
@@ -120,10 +132,11 @@ const UserTable = () => {
     setIsModalOpen(false);
   };
 
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.dni.includes(searchTerm) ||
-    user.matricula.includes(searchTerm)
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.dni.includes(searchTerm) ||
+      user.matricula.includes(searchTerm)
   );
 
   const pageCount = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
@@ -143,10 +156,10 @@ const UserTable = () => {
   const handleDeleteUser = async (userId: string) => {
     try {
       await deleteDoc(doc(db, 'users', userId));
-      setUsers(users.filter(user => user.id !== userId));
+      setUsers(users.filter((user) => user.id !== userId));
       handleCloseModal();
     } catch (error) {
-      console.error("Error deleting user: ", error);
+      console.error('Error deleting user: ', error);
     }
   };
 
@@ -159,39 +172,81 @@ const UserTable = () => {
           matricula: modalUser.matricula,
           lugarDeOrigen: modalUser.lugarDeOrigen,
           infoExtra: modalUser.infoExtra,
+          role: modalUser.role,
         });
-        setUsers(users.map(user => (user.id === modalUser.id ? modalUser : user))); // Actualizar el usuario en la lista
+        setUsers(users.map((user) => (user.id === modalUser.id ? modalUser : user))); // Actualizar el usuario en la lista
         handleCloseModal();
       } catch (error) {
-        console.error("Error updating user: ", error);
+        console.error('Error updating user: ', error);
       }
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof User) => {
-    if (modalUser) {
-      setModalUser({
-        ...modalUser,
-        [field]: e.target.value,
-      });
+  
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, // Acepta select también
+    field: keyof typeof modalUser
+  ) => {
+    const value = e.target.value;
+    
+    // Validar el valor del campo de rol
+    if (value !== 'admin' && value !== 'user') {
+      setErrorMessage('Solo se permite "admin" o "user"');
+    } else {
+      setErrorMessage(null); // Limpiar el mensaje de error si es válido
+    }
+
+    // Actualizar el estado
+    setModalUser({
+      ...modalUser,
+      [field]: value,
+    });
+  };
+  
+
+  const handleOpenPermissionsModal = (user: User) => {
+    setSelectedUser(user);
+    setPermissions(user.permissions); // Cargar los permisos actuales del usuario
+    setIsPermissionsModalOpen(true);
+  };
+
+  const handleClosePermissionsModal = () => {
+    setIsPermissionsModalOpen(false);
+  };
+
+  const handleSavePermissions = async () => {
+    if (selectedUser) {
+      try {
+        const userRef = doc(db, 'users', selectedUser.id);
+        await updateDoc(userRef, {
+          permissions: permissions,
+        });
+        setUsers(users.map((user) => (user.id === selectedUser.id ? { ...user, permissions } : user)));
+        handleClosePermissionsModal();
+        //recargar pagina
+        window.location.reload();
+      } catch (error) {
+        console.error('Error updating permissions: ', error);
+      }
     }
   };
 
-    // Inicializar el modal cuando el componente se monta
-    useEffect(() => {
-      const handleKeyDown = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-          closeModalMiembro('register-modal');
-        }
-      };
-  
-      initializeModalMiembro('register-modal');
-      document.addEventListener('keydown', handleKeyDown);
-      
-      return () => {
-        document.removeEventListener('keydown', handleKeyDown);
-      };
-    }, []);
+  // Inicializar el modal cuando el componente se monta
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeModalMiembro('register-modal');
+      }
+    };
+
+    initializeModalMiembro('register-modal');
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -203,16 +258,14 @@ const UserTable = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full max-w-sm border-customGreen rounded-3xl"
         />
-        <Button
-          onClick={(e) => {
-            e.preventDefault();
-            openModalMiembro('register-modal'); // Abre el modal al hacer clic
-          }
-          }
-          className="bg-customBlue text-white px-4 py-3 rounded-2xl text-sm font-semibold"
-        >
-          Agregar Miembro
-        </Button>
+        {userPermissions.agregarMiembro && (
+          <Button
+            onClick={handleOpenModalMiembro}
+            className="bg-customBlue text-white rounded-3xl"
+          >
+            Agregar nuevo miembro
+          </Button>
+        )}
       </div>
       { loading ? <Spinner/> : (
             <Table>
@@ -223,7 +276,12 @@ const UserTable = () => {
                 <TableHead>Matrícula</TableHead>
                 <TableHead>Lugar de Origen</TableHead>
                 <TableHead>Info Extra</TableHead>
+              {userPermissions.editarMiembro && (
                 <TableHead>Acciones</TableHead>
+              )}
+              {userPermissions.modificarPermisos && (
+                <TableHead>Permisos</TableHead>
+              )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -235,9 +293,18 @@ const UserTable = () => {
                     <TableCell>{user.matricula}</TableCell>
                     <TableCell>{user.lugarDeOrigen}</TableCell>
                     <TableCell>{user.infoExtra}</TableCell>
+                    {userPermissions.editarMiembro && (
                     <TableCell>
-                      <Button onClick={() => handleOpenModal(user)} className="text-blue-600 underline">Editar</Button>
+                      <Button onClick={() => handleOpenModal(user)} className="text-customBlue underline hover:text-cyan-900">Editar Miembro</Button>
                     </TableCell>
+                    )}
+                  {userPermissions.modificarPermisos && (
+                    <TableCell>
+                        <Button onClick={() => handleOpenPermissionsModal(user)} className="text-customBlue underline hover:text-cyan-900">
+                        Editar Permisos
+                      </Button>
+                    </TableCell>
+                  )}
                   </TableRow>
                 ))
               ) : (
@@ -251,78 +318,102 @@ const UserTable = () => {
 
       {/* Modal */}
       {modalUser && (
-        <div className="fixed inset-0 h-screen bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <section>
-            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-bold mb-4">Editar Detalles de {modalUser.name}</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="dni" className="block text-sm font-medium text-gray-700">
-                    DNI
-                  </label>
-                  <input
-                    id="dni"
-                    type="text"
-                    value={modalUser.dni}
-                    onChange={(e) => handleChange(e, 'dni')}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+  <div className="fixed -inset-4 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50" >
+    <div className="bg-white text-customBlack p-6 mx-2 sm:p-8 md:p-10 rounded-3xl shadow-lg max-w-md w-full transform transition-all duration-300 scale-100 opacity-100 translate-y-0 relative animate-fadeIn">
+      
+      <svg
+        onClick={handleCloseModal}
+        xmlns="http://www.w3.org/2000/svg"
+        className="absolute top-4 right-4 h-6 w-6 cursor-pointer text-gray-600 hover:text-gray-800"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
 
-                <div>
-                  <label htmlFor="matricula" className="block text-sm font-medium text-gray-700">
-                    Matrícula
-                  </label>
-                  <input
-                    id="matricula"
-                    type="text"
-                    value={modalUser.matricula}
-                    onChange={(e) => handleChange(e, 'matricula')}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+      <h3 className="text-3xl text-customBlue sm:text-4xl text-center font-bold mt-2 mb-6">Editar Detalles de {modalUser.name}</h3>
 
-                <div>
-                  <label htmlFor="lugarDeOrigen" className="block text-sm font-medium text-gray-700">
-                    Lugar de Origen
-                  </label>
-                  <input
-                    id="lugarDeOrigen"
-                    type="text"
-                    value={modalUser.lugarDeOrigen}
-                    onChange={(e) => handleChange(e, 'lugarDeOrigen')}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="infoExtra" className="block text-sm font-medium text-gray-700">
-                    Información Extra
-                  </label>
-                  <textarea
-                    id="infoExtra"
-                    value={modalUser.infoExtra}
-                    onChange={(e) => handleChange(e, 'infoExtra')}
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-end space-x-4">
-              <Button 
-                onClick={() => handleDeleteUser(modalUser.id)} 
-                className="bg-red-500 text-white"
-              >
-                Eliminar
-              </Button>
-                <Button onClick={handleCloseModal} className="bg-red-200 text-white">Cerrar</Button>
-                <Button onClick={handleSaveChanges} className="bg-blue-600 text-white">Guardar cambios</Button>
-              </div>
-            </div>
-          </section>
+      <form className="space-y-4" onSubmit={handleSaveChanges}>
+        <div>
+          <label htmlFor="dni" className="block text-lg font-bold">DNI</label>
+          <input
+            id="dni"
+            type="text"
+            value={modalUser.dni}
+            onChange={(e) => handleChange(e, 'dni')}
+            className="mt-1 block w-full p-2 border outline-none border-customBlack rounded-2xl focus:ring-2 focus:ring-blue-500"
+          />
         </div>
-      )}
+
+        <div>
+          <label htmlFor="matricula" className="block text-lg font-bold">Matrícula</label>
+          <input
+            id="matricula"
+            type="text"
+            value={modalUser.matricula}
+            onChange={(e) => handleChange(e, 'matricula')}
+            className="mt-1 block w-full p-2 border outline-none border-customBlack rounded-2xl focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="lugarDeOrigen" className="block text-lg font-bold">Lugar de Origen</label>
+          <input
+            id="lugarDeOrigen"
+            type="text"
+            value={modalUser.lugarDeOrigen}
+            onChange={(e) => handleChange(e, 'lugarDeOrigen')}
+            className="mt-1 block w-full p-2 border outline-none border-customBlack rounded-2xl focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="infoExtra" className="block text-lg font-bold">Información Extra</label>
+          <textarea
+            id="infoExtra"
+            value={modalUser.infoExtra}
+            onChange={(e) => handleChange(e, 'infoExtra')}
+            className="mt-1 block w-full p-2 border outline-none border-customBlack rounded-2xl focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="rol" className="block text-lg font-bold">Rol del Miembro</label>
+          <input
+            id="rol"
+            value={modalUser.role}
+            onChange={(e) => handleChange(e, 'role')}
+            className={`mt-1 block w-full p-2 border outline-none ${errorMessage ? 'border-red-500' : 'border-customBlack'} rounded-2xl focus:ring-2 focus:ring-blue-500`}
+          />
+          {errorMessage && <p className="text-red-500 text-sm mt-1">{errorMessage}</p>}
+        </div>
+
+        <div className="mt-6 flex justify-end space-x-4">
+          <Button onClick={handleCloseModal} className="bg-red-500 text-white rounded-xl px-6 py-3">
+            Cerrar
+          </Button>
+          
+          {userPermissions.eliminarMiembro && (
+            <Button onClick={() => handleDeleteUser(modalUser.id)} className="bg-customBlack text-white rounded-xl px-6 py-3">
+              Eliminar
+            </Button>
+          )}
+
+          <Button
+            onClick={handleSaveChanges}
+            className={`bg-customBlue text-white rounded-xl px-6 py-3 transition duration-300 hover:scale-105 ${errorMessage ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!!errorMessage}
+          >
+            Guardar Cambios
+          </Button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
 
       {/* Paginate Buttons */}
       <div className="mt-4 flex justify-between items-center">
@@ -350,6 +441,78 @@ const UserTable = () => {
           Siguiente
         </ButtonPagination>
       </div>
+
+      {isPermissionsModalOpen && selectedUser && (
+  <div className="fixed -inset-4 flex items-center justify-center z-50 bg-gray-500 bg-opacity-50">
+    <div className="bg-white text-customBlack p-8 sm:p-10 md:p-12 rounded-3xl shadow-lg max-w-7xl w-full transform transition-all duration-300 scale-100 opacity-100 translate-y-0 relative animate-fadeIn">
+      
+      {/* Botón de cerrar */}
+      <svg
+        onClick={handleClosePermissionsModal}
+        xmlns="http://www.w3.org/2000/svg"
+        className="absolute top-4 right-4 h-6 w-6 cursor-pointer text-gray-600 hover:text-gray-800"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+
+      <h2 className="text-3xl text-customBlue sm:text-4xl text-center font-bold mb-12">
+        Editar Permisos de <span className="font-bold text-gray-600">{selectedUser.name}</span>
+      </h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
+        {Object.keys(permissions).map(permission => (
+          <div key={permission} className="flex items-center space-x-3 min-w-[250px]">
+            <input
+              type="checkbox"
+              checked={permissions[permission]}
+              onChange={(e) =>
+                setPermissions({
+                  ...permissions,
+                  [permission]: e.target.checked,
+                })
+              }
+              className={`form-checkbox h-6 w-6 border-gray-300 rounded-md focus:ring-2 ${
+                permissions[permission] ? 'text-customGreen border-customGreen' : 'text-blue-600 focus:ring-blue-500'
+              }`}
+            />
+            <span
+              className={`text-md font-medium ${
+                permissions[permission] ? 'text-customGreen' : 'text-gray-700'
+              }`}
+            >
+              {permission.replace(/([A-Z])/g, ' $1').toUpperCase()}
+            </span>
+          </div>
+        )
+        
+        )}
+      </div>
+
+      <div className="mt-6 flex justify-end space-x-6">
+        <Button
+          onClick={handleClosePermissionsModal}
+          className="bg-gray-300 hover:bg-gray-400 text-black px-8 py-3 rounded-lg font-semibold transition duration-200"
+        >
+          Cancelar
+        </Button>
+        {userPermissions.modificarPermisos && (
+          <Button
+          onClick={handleSavePermissions}
+          className="bg-customBlue hover:bg-cyan-800 text-white px-8 py-3 rounded-lg font-semibold transition duration-200"
+        >
+          Guardar Cambios
+        </Button>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };

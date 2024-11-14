@@ -4,7 +4,7 @@ import { deleteObject, ref, getStorage } from 'firebase/storage'
 import { db } from '../../firebase/client'
 import CreateNoticiaModal from '../common/CreateNoticiaModal'
 import { Pencil, Trash2 } from 'lucide-react'
-import ContentHeader from '../common/CondicionPorRol' // Importa el componente CondicionPorRol
+import { usePermissions } from '../auth/PermissionsProvider'
 
 interface NewsArticledivProps {
   id: string
@@ -17,6 +17,7 @@ interface NewsArticledivProps {
 export default function NewsArticlediv({ id, title, description, imageUrl, date }: NewsArticledivProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const { permissions, loading, userId } = usePermissions()
 
   const handleEdit = () => {
     setIsModalOpen(true)
@@ -47,6 +48,14 @@ export default function NewsArticlediv({ id, title, description, imageUrl, date 
     }
   }
 
+  if (loading) {
+    return <div className='text-gray-400'>Cargando permisos...</div>
+  }
+
+  if (!permissions.verNoticias) {
+    return <div>No tienes permisos para ver este contenido.</div>
+  }
+
   return (
     <div className="group">
       <div className={`bg-[#187498] rounded-2xl ${isModalOpen ? '' : 'hover:scale-105 transition-all duration-200 ease-in-out'}`}>
@@ -64,13 +73,15 @@ export default function NewsArticlediv({ id, title, description, imageUrl, date 
             )}
           </div>
           <div className="absolute top-2 right-2 space-x-1 flex">
-            <ContentHeader>
+            {permissions.editarNoticias && (
               <button
                 className="rounded-full bg-[#187498] p-2 shadow-sm shadow-black/40"
                 onClick={handleEdit}
               >
                 <Pencil className="h-3 w-3 text-white" />
               </button>
+            )}
+            {permissions.eliminarNoticia && (
               <button
                 className="rounded-full bg-[#187498] p-2 shadow-sm shadow-black/40"
                 onClick={handleDelete}
@@ -78,7 +89,7 @@ export default function NewsArticlediv({ id, title, description, imageUrl, date 
               >
                 <Trash2 className="h-3 w-3 text-white" />
               </button>
-            </ContentHeader>
+            )}
           </div>
         </div>
         <div className="p-4 bg-primary rounded-b-2xl flex flex-col flex-grow h-24">

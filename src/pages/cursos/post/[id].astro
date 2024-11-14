@@ -8,6 +8,7 @@ import InfoExtra from '../../../components/ActAcademicas/detalle/InfoExtra.astro
 import CardSide from '../../../components/ActAcademicas/detalle/CardSide.astro';
 import Certificado from '../../../components/ActAcademicas/detalle/Certificado.astro';
 import ButtonEditCourse from '../../../components/CourseEditor/ButtonEditCourse.tsx';
+import VistaBotonEditarCurso from '../../../components/views/VistaBotonEditarCurso';
 import { db } from '../../../firebase/client';
 import { doc, getDoc } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
@@ -37,6 +38,7 @@ const pdfUrl = courseData.data()?.pdfUrl;
   <div class="flex justify-between items-center">
     <Pastilla title="Información del curso" />
     <ButtonEditCourse id={id} client:only="react" />
+    <VistaBotonEditarCurso id={id} client:only="react" />
   </div>
 
   <Banner 
