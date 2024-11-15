@@ -7,16 +7,25 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ title, imageUrl, date, id }) => {
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden flex flex-col sm:flex-row my-3 sm:w-80 w-full">
-      <img src={imageUrl} alt={title} className="w-full sm:w-40 h-40 object-cover rounded-t-lg sm:rounded-l-lg" />
-      <div className="p-4 flex-1">
-        <h3 className="text-xl font-semibold text-gray-800 line-clamp-2">{title}</h3>
-        <p className="text-xs text-gray-400 mt-1">{date}</p>
-        <a href={`/noticias/noticia/${id}`} className="text-customBlue mt-4 inline-block text-sm font-semibold hover:underline">
-          Leer más
-        </a>
-      </div>
-    </div>
+    <a href={`/noticias/noticia/${id}`} className="block group max-w-[300px] h-full">
+      <article className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 h-full">
+        {/* Imagen con tamaño fijo */}
+        <div className="relative overflow-hidden rounded-t-lg h-40">
+          <img 
+            src={imageUrl} 
+            alt={title}
+            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+          />
+        </div>
+        <div className="p-3 sm:p-4">
+          <h3 className="text-base sm:text-lg font-semibold line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">
+            {title}
+          </h3>
+          <time className="text-sm text-gray-500 block">{date}</time>
+        </div>
+      </article>
+    </a>
   );
 };
 

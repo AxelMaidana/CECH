@@ -9,11 +9,32 @@
 
   interface EditorComponentProps {
     pageId: string;
+    permissions: {
+      [key: string]: boolean;
+    };
+    userId: boolean,
   }
 
-  export default function EditorComponent({ pageId }: EditorComponentProps) {
+  // Mapeo de pageId a permisos requeridos
+  const PAGE_PERMISSIONS: { [key: string]: string } = {
+    'trámites': 'editarPanelTramites',
+    'institucional': 'editarPanelInfoInstitucional',
+    'dictámenes': 'editarPanelDictamenes',
+    'contacto' : 'editarPanelContacto',
+    'becas': 'editarPanelBecas',
+    'matriculados-activos': 'editarPanelMatriculados',
+    // Agrega aquí más mapeos según necesites
+  };
+
+  export default function EditorComponent({ pageId, permissions, userId }: EditorComponentProps) {
     const [content, setContent] = useState('');
     const [isEditing, setIsEditing] = useState(false);
+
+    // Función modificada para verificar permisos
+    const hasPermission = () => {
+      const requiredPermission = PAGE_PERMISSIONS[pageId];
+      return permissions && permissions[requiredPermission] === true;
+    };
 
     useEffect(() => {
       loadContent();
@@ -60,19 +81,36 @@
           reject('Image upload failed');
         }
       });
-    };
+    };  
 
-    if (!isEditing) {
+    // Vista de solo lectura si no hay usuario logueado
+    if (!userId) {
       return (
-        <div className="min-h-screen ">
-          <button
-            onClick={() => setIsEditing(true)}
-            className=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Edit Content
-          </button>
+        <div className="w-full max-w-none lg:max-w-7xl mx-auto">
           <div 
-            className="prose max-w-2xl lg:ml-10 mx-4"
+            className="prose prose-sm sm:prose lg:prose-lg max-w-none"
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
+        </div>
+      );
+    }
+
+    // Vista de edición si el usuario está logueado y tiene permiso
+    if (!isEditing || !hasPermission()) {
+      return (
+        <div className="w-full max-w-none lg:max-w-5xl mx-auto">
+          {hasPermission() && (
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
+              >
+                Editar Contenido
+              </button>
+            </div>
+          )}
+          <div 
+            className="prose prose-sm sm:prose lg:prose-lg max-w-none"
             dangerouslySetInnerHTML={{ __html: content }}
           />
         </div>
@@ -82,12 +120,13 @@
     const apiKey = '0rlylg7lwhml61g6ncx4rxhj7du8fblukvjr3ihjsxvsembn';
   
     return (
-      <div className="min-h-screen justify-center items-center w-full"> {/* Cambia w-full o ajusta según el ancho deseado */}
+      <div className="w-full">
         <Editor
           apiKey={apiKey}
           init={{
-            height: 500,
-            width: '100%', // Para que ocupe el 100% del ancho del contenedor
+            height: 'min(calc(100vh - 300px), 600px)',
+            min_height: 400,
+            width: '100%',
             menubar: true,
             language: 'es',
             plugins: [
@@ -99,6 +138,32 @@
               'bold italic forecolor | alignleft aligncenter ' +
               'alignright alignjustify | bullist numlist outdent indent | ' +
               'removeformat | image | help',
+            content_style: `
+              body { 
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                font-size: 16px;
+                line-height: 1.5;
+                max-width: 100%;
+                margin: 0 auto;
+                padding: 1rem;
+              }
+              img {
+                max-width: 100%;
+                height: auto;
+              }
+              @media (min-width: 640px) {
+                body {
+                  font-size: 18px;
+                  padding: 1.5rem;
+                }
+              }
+            `,
+            mobile: {
+              menubar: false,
+              toolbar_mode: 'scrolling',
+              height: 'calc(100vh - 250px)',
+              min_height: 300
+            },
             images_upload_handler: handleImageUpload,
             automatic_uploads: true,
             file_picker_types: 'image',
@@ -129,21 +194,19 @@
           value={content}
           onEditorChange={(newContent) => setContent(newContent)}
         />
-        <div className="mt-4 flex gap-2">
-          <button
-            onClick={handleSave}
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Save
-          </button>
+        <div className="mt-4 flex flex-col sm:flex-row gap-2 justify-end">
           <button
             onClick={() => setIsEditing(false)}
-            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+            className="w-full sm:w-auto bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded"
           >
-            Cancel
+            Cancelar
+          </button>
+          <button
+            onClick={handleSave}
+            className="w-full sm:w-auto bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded"
+          >
+            Guardar
           </button>
         </div>
       </div>
-    );
-    
-  }
+  )}

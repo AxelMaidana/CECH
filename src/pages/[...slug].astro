@@ -1,12 +1,9 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/LayoutPage.astro';
 import EditorComponent from '../components/common/Editor';
-import RoleCondition from '../components/common/RoleCondition';
-import ContentHeader from '../components/common/ViewCondition';
 import { db } from '../firebase/client';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-import Card from '../components/noticias/ultNoticias'; // Importa el componente Card para mostrar cada noticia
-import PageContent from '../components/views/Page';
+import Card from '../components/noticias/ultNoticias';
 
 const { slug } = Astro.params;
 const pageId = slug || 'index';
@@ -26,32 +23,67 @@ const noticias = querySnapshot.docs.map(doc => ({
   ...doc.data()
 }));
 
+// Obtener los permisos del usuario
+const usersRef = collection(db, 'users');
+const usersSnapshot = await getDocs(usersRef);
+const permissions = {};
+let userId = false; // Inicializa userId como false
+usersSnapshot.forEach(doc => {
+  const userData = doc.data();
+  if (userData.permissions) {
+    Object.assign(permissions, userData.permissions);
+  }
+  // Verifica si el usuario está logueado
+  if (userData.uid) {
+    userId = true; // Cambia a true si hay un uid
+  }
+});
+
 ---
 
 <Layout title={pageTitle}>
-  <div class="flex justify-center items-start w-full max-w-7xl mx-auto mt-6 mb-12 ">
-    <!-- Columna de últimas noticias a la izquierda (visible solo en lg) -->
-    <aside class="hidden lg:block w-80">
-      <h2 class="text-2xl font-bold text-gray-800">Últimas Noticias</h2>
-      <ul class="mt-4 space-y-4 w-full">
-        {noticias.map((noticia) => (
-          <Card
-            title={noticia.title}
-            imageUrl={noticia.imageUrl}
-            date={noticia.date}
-            id={noticia.id}
-            client:only="react"
-          />
-        ))}
-      </ul>
-    </aside>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="flex flex-col lg:flex-row gap-6">
+      <!-- Columna de últimas noticias -->
+      <aside class="w-full lg:w-80 flex-shrink-0">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Últimas Noticias</h2>
+        <div class="relative">
+          <div class="overflow-x-auto lg:overflow-visible scrollbar-hide px-4 sm:px-0">
+            <ul class="flex flex-row lg:flex-col gap-4 pb-4 lg:pb-0">
+              {noticias.map((noticia) => (
+                <li class="flex-shrink-0">
+                  <Card
+                    title={noticia.title}
+                    imageUrl={noticia.imageUrl}
+                    date={noticia.date}
+                    id={noticia.id}
+                    client:only="react"
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </aside>
 
-    <!-- Línea separadora -->
-    <div class="border-l-2 border-gray-300 mx-6 h-full"></div>
+      <!-- Línea separadora -->
+      <div class="hidden lg:block w-px bg-gray-200 self-stretch mx-2"></div>
 
-    <!-- Contenedor principal con contenido a la derecha -->
-      <PageContent client:only="react" pageId={pageId} />
+      <!-- Contenido principal -->
+      <main class="flex-1 w-full">
+        <EditorComponent client:only="react" pageId={pageId} permissions={permissions} userId={userId} />
+      </main>
+    </div>
   </div>
 </Layout>
 
+<style>
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+</style>
 

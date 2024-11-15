@@ -15,6 +15,9 @@ interface Permissions {
   eliminarNoticia: boolean,
   verMatriculados: boolean,
   agregarMatriculado: boolean,
+  editarPanelMatriculado: boolean,
+  editarPanelBecas: boolean,
+  editarPanelContacto: boolean,
   editarPanelTramites: boolean,
   editarPanelDictamenes: boolean,
   editarPanelInfoInstitucional: boolean,
@@ -46,6 +49,9 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
       eliminarNoticia: false,
       verMatriculados: false,
       agregarMatriculado: false,
+      editarPanelMatriculado: false,
+      editarPanelBecas: false,
+      editarPanelContacto: false,
       editarPanelTramites: false,
       editarPanelDictamenes: false,
       editarPanelInfoInstitucional: false,
@@ -67,7 +73,7 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
         const unsubscribePermissions = onSnapshot(userRef, (docSnapshot) => {
           if (docSnapshot.exists()) {
             const userData = docSnapshot.data();
-            setPermissions(userData.permissions || { verCursos: false, editarCursos: false, agregarCurso: false, eliminarCurso: false, verNoticias: false, editarNoticias: false, agregarNoticia: false, eliminarNoticia: false, verMatriculados: false, agregarMatriculado: false, editarPanelTramites: false, editarPanelDictamenes: false, editarPanelInfoInstitucional: false, agregarMiembro: false, eliminarMiembro: false, editarMiembro: false, modificarPermisos: false });
+            setPermissions(userData.permissions || { verCursos: false, editarCursos: false, agregarCurso: false, eliminarCurso: false, verNoticias: false, editarNoticias: false, agregarNoticia: false, eliminarNoticia: false, verMatriculados: false, agregarMatriculado: false, editarPanelBecas: false, editarPanelMatriculado: false, editarPanelTramites: false, editarPanelDictamenes: false, editarPanelContacto: false, editarPanelInfoInstitucional: false, agregarMiembro: false, eliminarMiembro: false, editarMiembro: false, modificarPermisos: false });
           } else {
             console.log('No se encontró el documento del usuario');
           }
@@ -79,8 +85,8 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
         return () => unsubscribePermissions();
       } else {
-        setUserId(null);
-        setPermissions({ verCursos: false, editarCursos: false, agregarCurso: false, eliminarCurso: false, verNoticias: false, editarNoticias: false, agregarNoticia: false, eliminarNoticia: false, verMatriculados: false, agregarMatriculado: false, editarPanelTramites: false, editarPanelDictamenes: false, editarPanelInfoInstitucional: false, agregarMiembro: false, eliminarMiembro: false, editarMiembro: false, modificarPermisos: false });
+        setUserId(null);  
+        setPermissions({ verCursos: false, editarCursos: false, agregarCurso: false, eliminarCurso: false, verNoticias: false, editarNoticias: false, agregarNoticia: false, eliminarNoticia: false, verMatriculados: false, agregarMatriculado: false, editarPanelBecas: false, editarPanelMatriculado: false, editarPanelTramites: false, editarPanelDictamenes: false, editarPanelContacto: false, editarPanelInfoInstitucional: false, agregarMiembro: false, eliminarMiembro: false, editarMiembro: false, modificarPermisos: false });
         setLoading(false);
       }
     });

@@ -52,9 +52,54 @@ export default function NewsArticlediv({ id, title, description, imageUrl, date 
     return <div className='text-gray-400'>Cargando permisos...</div>
   }
 
+  if (!userId){
+    
+    return <div>
+    <div className="card relative rounded-3xl shadow-lg shadow-black/40 overflow-hidden transition-transform duration-300 group hover:scale-105 flex flex-col h-full">
+      <h2 className="absolute top-40 text-3xl font-bold text-customBlack text-center z-10">
+        Inicia sesión para ver esta noticia o contacta con el administrador
+      </h2>
+  
+      <div className="relative w-full h-full opacity-30 bg-gray-100 rounded-3xl flex flex-col">
+        <div className="relative w-full h-40 flex-shrink-0">
+          {imageUrl && (
+            <img
+              src="https://img.freepik.com/fotos-premium/signo-interrogacion-negro-sobre-fondo-negro-estudio_241146-2516.jpg"
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
+        </div>
+  
+        <div className="bg-white p-6 flex flex-col flex-grow">
+          <h2 className="bg-gray-200 w-full py-3 mb-1 border-2 rounded-full animate-pulse"></h2>
+          <h2 className="bg-gray-200 w-32 py-3 mb-4 border-2 rounded-full animate-pulse"></h2>
+          <div className="flex flex-wrap gap-2 mb-6">
+            <span className="bg-gray-200 w-full py-1 border-2 rounded-full animate-pulse"></span>
+            <span className="bg-gray-200 w-full py-1 border-2 rounded-full animate-pulse"></span>
+            <span className="bg-gray-200 w-full py-1 border-2 rounded-full animate-pulse"></span>
+            <span className="bg-gray-200 w-48 py-1 border-2 rounded-full animate-pulse"></span>
+          </div>
+          <div className="flex flex-wrap gap-2 mb-6">
+            <span className="bg-gray-200 w-32 py-3 border-2 rounded-full animate-pulse"></span>
+            <span className="bg-gray-200 w-32 py-3 border-2 rounded-full animate-pulse"></span>
+            <span className="bg-gray-200 w-32 py-3 border-2 rounded-full animate-pulse"></span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  }
+
   if (!permissions.verNoticias) {
     return <div>No tienes permisos para ver este contenido.</div>
   }
+
 
   return (
     <div className="group">

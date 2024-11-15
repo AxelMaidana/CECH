@@ -29,5 +29,6 @@ export default function ContentHeader() {
   return (
     // depende del rol mostrar el nav correspondiente
     userData?.role === 'admin' ? <NavAdmin /> : <NavUser />
+   
   );
 }

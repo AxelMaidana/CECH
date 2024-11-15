@@ -13,6 +13,8 @@ type MenuItem = {
 export default function UserMenu() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [openSubmenusDesktop, setOpenSubmenusDesktop] = useState<{ [key: string]: boolean }>({});
+  const [openSubmenusMobile, setOpenSubmenusMobile] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     const q = query(collection(db, 'menu'));
@@ -27,27 +29,76 @@ export default function UserMenu() {
     return () => unsubscribe();
   }, []);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
+  const toggleMenu = () => setIsOpen(!isOpen);
+
+  const toggleSubmenuMobile = (id: string) => {
+    setOpenSubmenusMobile(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const toggleSubmenuDesktop = (id: string) => {
+    setOpenSubmenusDesktop(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   const getChildItems = (parentId: string | null) => {
     return menuItems.filter(item => item.parentId === parentId);
   };
 
-  const renderMenuItem = (item: MenuItem, depth: number = 0) => {
+  const renderMenuItem = (item: MenuItem, depth: number = 0, index: number) => {
     const children = getChildItems(item.id);
-    
+    const isSubmenuOpenMobile = openSubmenusMobile[item.id];
+    const isSubmenuOpenDesktop = openSubmenusDesktop[item.id];
+    const isFirst = index === 0;
+    const isLast = index === menuItems.length - 1;
+
     return (
-      <li key={item.id} className={`relative group ${depth === 0 ? 'flex-grow text-center border-r border-black border-opacity-20 last:border-0' : ''}`}>
-        <a href={`/${item.path.replace(/\//g, '-')}`} className={`block transform hover:scale-105 hover:underline transition-transform duration-100 ${depth === 0 ? 'text-white' : 'text-white'} text-xs whitespace-nowrap 2xl:text-sm py-1 px-4`}>
-          {item.title}
-          {children.length > 0 && (depth === 0 ? <ChevronDown className="inline-block w-4 h-4 ml-1" /> : <ChevronRight className="inline-block w-4 h-4 ml-1" />)}
-        </a>
-        {children.length > 0 && (
-          <div className={`absolute ${depth === 0 ? 'left-0 top-full' : 'left-full top-0'} mt-2 w-48 rounded-md shadow-lg bg-customGreen ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10`}>
-            <ul className="py-1">
-              {children.map(child => renderMenuItem(child, depth + 1))}
+      <li key={item.id} className={`relative ${depth === 0 ? 'group' : ''} 
+        ${window.innerWidth >= 1024 ? 
+          `border-l border-l-customBlack border-opacity-30 ${isFirst ? 'border-l-0' : ''} ${isLast ? 'border-r-0' : ''}` 
+          : ''} 
+        ${depth === 0 && window.innerWidth < 1024 ? 'border-b border-b-customBlack border-opacity-30 py-2' : ''}`}>
+        <div className="flex items-center justify-between w-full">
+          <a
+            href={`/${item.path.replace(/\//g, '-')}`}
+            className={`flex items-center justify-center w-full text-white text-xs py-1 px-4 hover:underline transform hover:scale-105 transition-transform duration-100 ${depth === 0 ? 'text-center' : ''} ${window.innerWidth >= 1024 ? 'text-center' : ''}`}
+          >
+            {item.title}
+          </a>
+          {children.length > 0 && (
+            <button
+              onClick={() => {
+                if (window.innerWidth < 1024) {
+                  toggleSubmenuMobile(item.id);
+                } else {
+                  toggleSubmenuDesktop(item.id);
+                }
+              }}
+              className="ml-2 text-white"
+            >
+              {isSubmenuOpenMobile || isSubmenuOpenDesktop ? (
+                <ChevronDown className="w-4 h-4" />
+              ) : (
+                <ChevronRight className="w-4 h-4" />
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* Submenú para Móvil */}
+        {children.length > 0 && isSubmenuOpenMobile && (
+          <div className="lg:hidden mt-2 pl-4 bg-[#46b424] p-2 text-start shadow-inner shadow-[#2b3a2a]">
+            <ul>
+              {children.map(child => renderMenuItem(child, depth + 1, 0))}
+            </ul>
+          </div>
+        )}
+
+        {/* Submenú para Escritorio */}
+        {children.length > 0 && (isSubmenuOpenDesktop || window.innerWidth >= 1024) && (
+          <div className="lg:block absolute left-0 top-full mt-2 w-48 bg-[#46b424] rounded-md 
+            opacity-0 group-hover:opacity-100 transition-opacity duration-200 
+            shadow-inner shadow-[#2b3a2a]">
+            <ul>
+              {children.map(child => renderMenuItem(child, depth + 1, 0))}
             </ul>
           </div>
         )}
@@ -56,17 +107,18 @@ export default function UserMenu() {
   };
 
   return (
-    <nav className="bg-customGreen text-sm font-bold flex self-end md:justify-center md:items-center rounded-l-xl md:rounded-none md:rounded-b-xl shadow-lg w-8 md:w-full z-40 relative">
-      <div className="container mx-auto py-1 flex justify-center items-center px-6 max-w-full">
+    <nav className="bg-customGreen text-sm font-bold flex self-end lg:self-auto lg:justify-center lg:items-center rounded-l-xl lg:rounded-none lg:rounded-b-xl shadow-lg w-8 lg:w-full z-40 relative">
+      <div className="container mx-auto py-1 flex justify-center items-center">
         <button
-          className="block md:hidden text-white focus:outline-none"
+          className="block lg:hidden text-white focus:outline-none"
           onClick={toggleMenu}
         >
           <Menu className="w-6 h-6" />
         </button>
 
-        <ul className="hidden md:flex md:justify-between md:w-full text-white space-x-4">
-          {menuItems.filter(item => item.parentId === null).map(item => renderMenuItem(item))}
+        {/* Menú de escritorio con espaciado uniforme */}
+        <ul className="hidden lg:flex lg:justify-center lg:items-center text-center lg:w-full text-white space-x-4 xl:gap-x-10">
+          {menuItems.filter(item => item.parentId === null).map((item, index) => renderMenuItem(item, 0, index))}
         </ul>
       </div>
 
@@ -84,7 +136,7 @@ export default function UserMenu() {
           &times;
         </button>
         <ul className="mt-16 text-white space-y-1">
-          {menuItems.filter(item => item.parentId === null).map(item => renderMenuItem(item))}
+          {menuItems.filter(item => item.parentId === null).map((item, index) => renderMenuItem(item, 0, index))}
         </ul>
       </div>
     </nav>

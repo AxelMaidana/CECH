@@ -150,23 +150,23 @@ export default function Component() {
   }
 
   const renderMenuItem = (item: MenuItem, depth: number = 0) => {
-    const children = getChildItems(item.id)
-
+    const children = getChildItems(item.id);
+  
     return (
       <li key={item.id} className={`relative group ${depth === 0 ? 'flex-grow text-center border-r border-black border-opacity-20 last:border-0' : ''}`}>
         <a href={`/${item.path.replace(/\//g, '-')}`} className={`block transform hover:scale-105 hover:underline transition-transform duration-100 ${depth === 0 ? 'text-white' : 'text-white'} text-xs whitespace-nowrap 2xl:text-sm py-1 px-2`}>
           {item.title}
           {children.length > 0 && (depth === 0 ? <ChevronDown className="inline-block w-4 h-4 ml-1" /> : <ChevronRight className="inline-block w-4 h-4 ml-1" />)}
         </a>
-        {(children.length > 0 || depth === 0) && (
+        {children.length > 0 && (
           <div className={`absolute ${depth === 0 ? 'left-0 top-full' : 'left-full top-0'} mt-2 w-48 rounded-md shadow-lg bg-customGreen ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10`}>
             <ul className="py-0">
               {children.map(child => renderMenuItem(child, depth + 1))}
             </ul>
             <button
               onClick={(e) => {
-                e.stopPropagation()
-                setShowAddForm(item.id)
+                e.stopPropagation();
+                setShowAddForm(item.id);
               }}
               className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-green-600 border-t border-white border-opacity-20"
             >
@@ -291,7 +291,11 @@ export default function Component() {
           </div>
         )}
       </li>
+      
     )
+    //submenu
+    
+    
   }
 
   const allMenuItems = [
@@ -299,16 +303,16 @@ export default function Component() {
   ]
 
   return (
-    <nav className="bg-customGreen text-sm font-bold flex self-end md:justify-center md:items-center rounded-l-xl md:rounded-none md:rounded-b-xl shadow-lg w-8 md:w-full z-40 relative">
+    <nav className="bg-customGreen text-sm font-bold flex self-end lg:self-auto lg:justify-center lg:items-center rounded-l-xl lg:rounded-none lg:rounded-b-xl shadow-lg w-8 lg:w-full z-40 relative">
       <div className="container mx-auto py-1 flex justify-center items-center">
         <button
-          className="block md:hidden text-white focus:outline-none"
+          className="block lg:hidden text-white focus:outline-none"
           onClick={toggleMenu}
         >
           <Menu className="w-6 h-6" />
         </button>
 
-        <ul className="hidden md:flex md:justify-between md:w-full text-white space-x-1">
+        <ul className="hidden lg:flex lg:justify-between lg:w-full text-white space-x-1">
           {allMenuItems.filter(item => item.parentId === null).map(item => renderMenuItem(item))}
           {/* 
           <li className="flex-grow text-center border-r border-black border-opacity-20 last:border-0">

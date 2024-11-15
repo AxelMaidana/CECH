@@ -260,7 +260,7 @@ const UserTable = () => {
         />
         {userPermissions.agregarMiembro && (
           <Button
-            onClick={handleOpenModalMiembro}
+            onClick={() => setIsModalOpen(true)}
             className="bg-customBlue text-white rounded-3xl"
           >
             Agregar nuevo miembro
