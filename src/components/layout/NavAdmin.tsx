@@ -201,7 +201,7 @@ export default function Component() {
         )}
         {/* Formulario de edición */}
         {editingPageId === item.id && (
-          <div className="absolute z-50 mt-2 w-64 bg-customGreen rounded-md shadow-lg p-4">
+          <div className="absolute z-40 mt-2 w-64 bg-customGreen rounded-md shadow-lg p-4">
             <input
               type="text"
               value={editedTitle}
@@ -220,7 +220,7 @@ export default function Component() {
         )}
         {/* Confirmación de eliminación */}
         {showDeleteConfirm === item.id && (
-          <div className="absolute z-50 mt-2 w-64 bg-white rounded-md shadow-lg p-4">
+          <div className="absolute z-40 mt-2 w-64 bg-white rounded-md shadow-lg p-4">
             <p className="text-gray-800 mb-4">¿Estás seguro que quieres borrar esta página y todas sus subpáginas?</p>
             <div className="flex justify-end gap-2">
               <button
@@ -303,7 +303,7 @@ export default function Component() {
   ]
 
   return (
-    <nav className="bg-customGreen text-sm font-bold flex self-end lg:self-auto lg:justify-center lg:items-center rounded-l-xl lg:rounded-none lg:rounded-b-xl shadow-lg w-8 lg:w-full z-40 relative">
+    <nav className="bg-customGreen text-sm font-bold flex self-end lg:self-auto lg:justify-center lg:items-center rounded-l-xl lg:rounded-none lg:rounded-b-xl shadow-lg w-8 lg:w-full z-auto relative">
       <div className="container mx-auto py-1 flex justify-center items-center">
         <button
           className="block lg:hidden text-white focus:outline-none"
@@ -335,7 +335,7 @@ export default function Component() {
       <div
         className={`fixed top-0 right-0 h-screen bg-customGreen w-full max-w-[300px] shadow-lg transform ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
-        } transition-transform duration-300 ease-in-out z-50 rounded-l-2xl overflow-y-auto`}
+        } transition-transform duration-300 ease-in-out z-40 rounded-l-2xl overflow-y-auto`}
       >
         <button
           className="absolute top-4 right-4 text-white text-3xl"
@@ -350,7 +350,7 @@ export default function Component() {
 
       {/* Formulario de Añadir Página */}
       {showAddForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
           <div className="bg-customGreen rounded-md shadow-lg p-4 w-64">
             <input
               type="text"
@@ -379,7 +379,7 @@ export default function Component() {
 
       {/* Confirmación de Eliminación */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
           <div className="bg-white rounded-md shadow-lg p-4 w-64">
             <p className="text-gray-800 mb-4">¿Estás seguro que quieres borrar esta subpágina</p>
             <div className="flex justify-end gap-2">
@@ -402,7 +402,7 @@ export default function Component() {
 
       {/* Formulario de Edición */}
       {editingPageId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
           <div className="bg-customGreen rounded-md shadow-lg p-4 w-64">
             <input
               type="text"

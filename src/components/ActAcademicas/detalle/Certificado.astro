@@ -1,8 +1,7 @@
 --- 
-import Boton from '../../layout/Reusable/Boton.astro';
-import PasoUno from '../../modales/PasoUno.astro';
-import PasoDos from '../../modales/PasoDos.astro';
-import CertificacionExitosa from '../../modales/CertificacionExitosa.astro';
+import Certificadoo from '../../modales/Certificado';
+
+const { postId, postTitulo } = Astro.props;
 ---
 
 <div class="flex flex-col md:flex-row py-10 px-6 md:px-10 lg:px-20 xl:px-40 justify-between items-center bg-[url('/media/certificado.png')] bg-cover bg-center bg-no-repeat relative">
@@ -16,27 +15,7 @@ import CertificacionExitosa from '../../modales/CertificacionExitosa.astro';
     </div>
     
     <div class="relative z-10 mt-8 | md:mt-0 | lg:p-0">
-        <Boton title="SOLICITAR CERTIFICADO"
-            shadow="shadow-customButton shadow-black/40"
-            sizeText="text-xl | md:text-xl | lg:text-2xl"
-            color="bg-customBlue text-white"
-            rounded="rounded-xl"
-            size="w-full | md:w-auto | lg:w-auto"
-            id="certificat-btn"
-        />
+            <Certificadoo client:only="react" postId={postId} postTitulo={postTitulo} />
     </div>
 
-    <!-- Modales -->
-    <PasoUno />
-    <PasoDos />
-    <CertificacionExitosa />
-
 </div>
-    
-<script src="/src/components/js/modalCertificate.js"></script>
-
-<style>
-    .hidden {
-      display: none;
-    }
-  </style>

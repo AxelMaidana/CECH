@@ -1,10 +1,5 @@
 ---
-// Importa los modales
-import ModalNoLogin from '../../modales/NoLogin.astro';
-import ModalLogin from '../../auth/LoginModal';
-import ModalRegistro from '../../auth/RegisterModal';
-import ModalInscripcionExitosa from '../../modales/InscripcionExitosa.astro';
-
+import Inscripcion from '../../modales/Inscripcion';
 const { title, image, price, modality, duration, description } = Astro.props;
 ---
 
@@ -19,9 +14,7 @@ const { title, image, price, modality, duration, description } = Astro.props;
       <h1 class="md:text-7xl text-5xl font-bold mb-2">{title}</h1>
       <div class="flex flex-wrap gap-8 my-6">
         <div>
-          <button id="inscribirme-btn" class="bg-customBlue hover:scale-105 transition duration-300 ease-in-out text-white px-10 py-3 rounded-xl text-xl font-semibold">
-            Inscribirme Ahora
-          </button>
+            <Inscripcion client:only="react" title={title} />
         </div>
         <div class="flex flex-wrap gap-3 md:justify-end items-center">
           <span class="text-customCyan px-3 py-1 border-solid border-2 border-customCyan rounded-lg text-lg font-semibold">{price}</span>
@@ -34,17 +27,4 @@ const { title, image, price, modality, duration, description } = Astro.props;
   </div>
 
   {/* Aquí insertas los modales */}
-  <ModalNoLogin />
-  <ModalLogin />
-  <ModalRegistro />
-  <ModalInscripcionExitosa />
 </div>
-
-
-<script src="/src/components/js/modalsInscripcion.js"></script>
-
-<style>
-  .hidden {
-    display: none;
-  }
-</style>

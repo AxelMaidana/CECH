@@ -1,0 +1,18 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import UserProfile from '../../components/user/UserProfile';
+import Pastilla from '../../components/ActAcademicas/detalle/Pastilla.astro';
+
+const { uid } = Astro.params;
+---
+
+<Layout title="Perfil">
+  <Pastilla 
+    title="Perfil de usuario"
+  />
+
+    <UserProfile client:only="react" userId={uid}/>
+    <div class="mb-8"></div>
+  
+</Layout>
+

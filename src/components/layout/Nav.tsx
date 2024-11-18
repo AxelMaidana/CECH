@@ -127,7 +127,7 @@ export default function UserMenu() {
       )}
 
       <div
-        className={`fixed top-0 right-0 h-screen bg-customGreen w-full max-w-[300px] shadow-lg transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-50 rounded-l-2xl overflow-y-auto`}
+        className={`fixed top-0 right-0 h-screen bg-customGreen w-full max-w-[300px] shadow-lg transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out z-40 rounded-l-2xl overflow-y-auto`}
       >
         <button
           className="absolute top-4 right-4 text-white text-3xl"

@@ -37,7 +37,6 @@ const pdfUrl = courseData.data()?.pdfUrl;
 <Layout title={courseData.data()?.title}>
   <div class="flex justify-between items-center">
     <Pastilla title="Información del curso" />
-    <ButtonEditCourse id={id} client:only="react" />
     <VistaBotonEditarCurso id={id} client:only="react" />
   </div>
 

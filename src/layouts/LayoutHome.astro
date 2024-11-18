@@ -28,8 +28,9 @@ const { title } = Astro.props;
 		<LoadingSpinner client:load/>
 		<ViewTransitions />
 		<Header />
-
-		<MostrarNav client:load />
+		<div class="z-40">
+			<MostrarNav client:load />
+		</div>
 
 		<slot />
 		<Footer 

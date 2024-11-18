@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase/client';
-import { openModalMiembro, closeModalMiembro, initializeModalMiembro } from '../auth/RegisterModal';
+import RegisterModal from '../auth/RegisterModal';
 import { usePermissions } from '../auth/PermissionsProvider';
 
 // UI Components
@@ -122,16 +122,6 @@ const UserTable = () => {
     fetchUsers();
   }, []);
 
-  // Abrir el modal de confirmación
-  const handleOpenModalMiembro = () => {
-    setIsModalOpen(true);
-  };
-
-  // Cerrar el modal de confirmación
-  const handleCloseModalMiembro = () => {
-    setIsModalOpen(false);
-  };
-
   const filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -232,22 +222,6 @@ const UserTable = () => {
     }
   };
 
-  // Inicializar el modal cuando el componente se monta
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeModalMiembro('register-modal');
-      }
-    };
-
-    initializeModalMiembro('register-modal');
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
   return (
     <div className="space-y-4">
       <div className="flex justify-between">
@@ -258,14 +232,11 @@ const UserTable = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full max-w-sm border-customGreen rounded-3xl"
         />
+
         {userPermissions.agregarMiembro && (
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-customBlue text-white rounded-3xl"
-          >
-            Agregar nuevo miembro
-          </Button>
+          <RegisterModal />
         )}
+
       </div>
       { loading ? <Spinner/> : (
             <Table>
@@ -276,11 +247,8 @@ const UserTable = () => {
                 <TableHead>Matrícula</TableHead>
                 <TableHead>Lugar de Origen</TableHead>
                 <TableHead>Info Extra</TableHead>
-              {userPermissions.editarMiembro && (
+              {userPermissions.editarMiembro && userPermissions.modificarPermisos && (
                 <TableHead>Acciones</TableHead>
-              )}
-              {userPermissions.modificarPermisos && (
-                <TableHead>Permisos</TableHead>
               )}
               </TableRow>
             </TableHeader>
@@ -293,17 +261,23 @@ const UserTable = () => {
                     <TableCell>{user.matricula}</TableCell>
                     <TableCell>{user.lugarDeOrigen}</TableCell>
                     <TableCell>{user.infoExtra}</TableCell>
+                    {userPermissions.editarMiembro && userPermissions.modificarPermisos && (
+                    <TableCell>
+                    <div className="flex flex-col text-sm font-semibold gap-y-1">
                     {userPermissions.editarMiembro && (
-                    <TableCell>
-                      <Button onClick={() => handleOpenModal(user)} className="text-customBlue underline hover:text-cyan-900">Editar Miembro</Button>
-                    </TableCell>
+                    <button 
+                      onClick={() => window.location.href = `/admin/perfil/${user.id}`} // Redirige al perfil del usuario usando su ID
+                      className="text-customBlue underline hover:text-cyan-900">
+                      Perfil
+                    </button>
                     )}
-                  {userPermissions.modificarPermisos && (
-                    <TableCell>
-                        <Button onClick={() => handleOpenPermissionsModal(user)} className="text-customBlue underline hover:text-cyan-900">
-                        Editar Permisos
-                      </Button>
-                    </TableCell>
+                    {userPermissions.modificarPermisos && (
+                      <button onClick={() => handleOpenPermissionsModal(user)} className="text-customBlue underline hover:text-cyan-900">
+                      Permisos
+                    </button>
+                    )}
+                    </div>
+                  </TableCell>
                   )}
                   </TableRow>
                 ))
@@ -315,105 +289,6 @@ const UserTable = () => {
             </TableBody>
             </Table>
       )}
-
-      {/* Modal */}
-      {modalUser && (
-  <div className="fixed -inset-4 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50" >
-    <div className="bg-white text-customBlack p-6 mx-2 sm:p-8 md:p-10 rounded-3xl shadow-lg max-w-md w-full transform transition-all duration-300 scale-100 opacity-100 translate-y-0 relative animate-fadeIn">
-      
-      <svg
-        onClick={handleCloseModal}
-        xmlns="http://www.w3.org/2000/svg"
-        className="absolute top-4 right-4 h-6 w-6 cursor-pointer text-gray-600 hover:text-gray-800"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-
-      <h3 className="text-3xl text-customBlue sm:text-4xl text-center font-bold mt-2 mb-6">Editar Detalles de {modalUser.name}</h3>
-
-      <form className="space-y-4" onSubmit={handleSaveChanges}>
-        <div>
-          <label htmlFor="dni" className="block text-lg font-bold">DNI</label>
-          <input
-            id="dni"
-            type="text"
-            value={modalUser.dni}
-            onChange={(e) => handleChange(e, 'dni')}
-            className="mt-1 block w-full p-2 border outline-none border-customBlack rounded-2xl focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="matricula" className="block text-lg font-bold">Matrícula</label>
-          <input
-            id="matricula"
-            type="text"
-            value={modalUser.matricula}
-            onChange={(e) => handleChange(e, 'matricula')}
-            className="mt-1 block w-full p-2 border outline-none border-customBlack rounded-2xl focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="lugarDeOrigen" className="block text-lg font-bold">Lugar de Origen</label>
-          <input
-            id="lugarDeOrigen"
-            type="text"
-            value={modalUser.lugarDeOrigen}
-            onChange={(e) => handleChange(e, 'lugarDeOrigen')}
-            className="mt-1 block w-full p-2 border outline-none border-customBlack rounded-2xl focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="infoExtra" className="block text-lg font-bold">Información Extra</label>
-          <textarea
-            id="infoExtra"
-            value={modalUser.infoExtra}
-            onChange={(e) => handleChange(e, 'infoExtra')}
-            className="mt-1 block w-full p-2 border outline-none border-customBlack rounded-2xl focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="rol" className="block text-lg font-bold">Rol del Miembro</label>
-          <input
-            id="rol"
-            value={modalUser.role}
-            onChange={(e) => handleChange(e, 'role')}
-            className={`mt-1 block w-full p-2 border outline-none ${errorMessage ? 'border-red-500' : 'border-customBlack'} rounded-2xl focus:ring-2 focus:ring-blue-500`}
-          />
-          {errorMessage && <p className="text-red-500 text-sm mt-1">{errorMessage}</p>}
-        </div>
-
-        <div className="mt-6 flex justify-end space-x-4">
-          <Button onClick={handleCloseModal} className="bg-red-500 text-white rounded-xl px-6 py-3">
-            Cerrar
-          </Button>
-          
-          {userPermissions.eliminarMiembro && (
-            <Button onClick={() => handleDeleteUser(modalUser.id)} className="bg-customBlack text-white rounded-xl px-6 py-3">
-              Eliminar
-            </Button>
-          )}
-
-          <Button
-            onClick={handleSaveChanges}
-            className={`bg-customBlue text-white rounded-xl px-6 py-3 transition duration-300 hover:scale-105 ${errorMessage ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={!!errorMessage}
-          >
-            Guardar Cambios
-          </Button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
-
 
       {/* Paginate Buttons */}
       <div className="mt-4 flex justify-between items-center">

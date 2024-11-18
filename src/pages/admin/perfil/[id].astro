@@ -1,0 +1,15 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import UserProfile from "../../../components/admin/perfil/Perfil";
+import Pastilla from "../../../components/ActAcademicas/detalle/Pastilla.astro";
+const { id } = Astro.params; // Obtener el id del usuario desde la ruta
+---
+
+<Layout title="Perfil del usuario">
+    <Pastilla 
+    title={`Editar Perfil del usuario`}
+  />
+    <UserProfile client:only="react" userId={id}/>
+    <div class="mb-8"></div>
+</Layout>
+<!-- Aquí se mostraría el perfil del usuario -->

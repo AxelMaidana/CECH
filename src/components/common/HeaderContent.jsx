@@ -14,34 +14,32 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
+        // Establecer el usuario autenticado
         setUser(currentUser);
+
+        // Obtener datos adicionales del usuario desde Firestore (si es necesario)
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        setUserData(userDoc.data());
+        if (userDoc.exists()) {
+          setUserData(userDoc.data()); // Almacena los datos de Firestore en el estado
+        } else {
+          setUserData(null); // Si no hay documento de usuario en Firestore, establecer userData como null
+        }
       } else {
         setUser(null);
         setUserData(null);
       }
-      setLoading(false); // Detener estado de carga
+      setLoading(false); // Detener el estado de carga
     });
 
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
     return () => {
-      unsubscribe();
-      document.removeEventListener('mousedown', handleClickOutside);
+      unsubscribe(); // Limpiar el observador cuando el componente se desmonte
     };
   }, []);
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      window.location.href = '/';
+      window.location.href = '/'; // Redirigir al home después de cerrar sesión
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
@@ -91,7 +89,8 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
             <div className="flex items-center relative" ref={dropdownRef}>
               <h1 className="text-md text-white font-bold hidden md:block">
                 <div className="tracking-wider leading-tight">
-                  <span>{userData?.name} {userData?.lastName}</span>
+                  {/* Muestra el uid del usuario directamente desde currentUser */}
+                  <span>{userData.name} {userData.lastName}</span>
                   <span className="block text-xs text-cyan-400">
                     {userData?.role === 'admin' ? 'Administrador' : userData?.role === 'user' ? 'Usuario' : 'Invitado'}
                   </span>
@@ -102,14 +101,14 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
                 alt="Avatar"
                 width={64}
                 height={64}
-                className="w-16 h-16 rounded-full cursor-pointer ml-4"
+                className="w-16 h-16 rounded-full object-cover cursor-pointer ml-4"
                 onClick={toggleDropdown}
               />
               {dropdownOpen && (
                 <div className="absolute right-0 mt-52 w-48 bg-white rounded-lg shadow-xl z-50">
                   <ul className="p-2">
                     <li className="transform hover:scale-105 transition duration-200">
-                      <a href="/perfil" className="flex items-center p-2 text-sm text-gray-900 rounded-lg hover:bg-gray-100 w-full text-left">
+                      <a href={`/perfil/${user.uid}`} className="flex items-center p-2 text-sm text-gray-900 rounded-lg hover:bg-gray-100 w-full text-left">
                         Perfil
                       </a>
                     </li>
