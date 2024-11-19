@@ -39,10 +39,6 @@ export default function CreateCourseButton() {
     return <div className='text-gray-400'>Cargando permisos...</div>;
   }
 
-  if (!userId) {
-    return <div>No tienes permisos para ver este contenido.</div>;
-  }
-
   return (
     permissions.agregarCurso && (
       <div>
