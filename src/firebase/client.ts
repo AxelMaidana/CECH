@@ -4,7 +4,6 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import { getFunctions, httpsCallable } from "firebase/functions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0PuEh7IRp1BHe5W495zU64A6ijgVL6ew",
@@ -19,9 +18,7 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-const functions = getFunctions(app);
 
-export const createUserWithoutSignIn = httpsCallable(functions, "createUserWithoutSignIn");
 
 //funcion para obtener el usuario actual
 export const getCurrentUser = () => {
@@ -36,7 +33,7 @@ export const getCurrentUser = () => {
   });
 };
 
-//funcion para obtener el rol del usuario
+//funcion para obtener el rol del usuarioa
 export const getUserRole = async (userId: string): Promise<string | null> => {
   try {
     const userDoc = doc(db, 'users', userId);

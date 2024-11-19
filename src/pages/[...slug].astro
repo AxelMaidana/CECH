@@ -1,5 +1,5 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/LayoutPage.astro';
 import EditorComponent from '../components/common/Editor';
 import { db } from '../firebase/client';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
@@ -24,71 +24,68 @@ const noticias = querySnapshot.docs.map(doc => ({
 ---
 
 <Layout title={pageId}>
-{pageExists ? (
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div class="flex flex-col lg:flex-row gap-6">
-      <!-- Columna de últimas noticias -->
-      <aside class="w-full lg:w-80 flex-shrink-0">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Últimas Noticias</h2>
-        <div class="relative">
-          <div class="overflow-x-auto lg:overflow-visible scrollbar-hide px-4 sm:px-0">
-            <ul class="flex flex-row lg:flex-col gap-4 pb-4 lg:pb-0">
-              {noticias.map((noticia) => (
-                <li class="flex-shrink-0">
-                  <Card
-                    title={noticia.title}
-                    imageUrl={noticia.imageUrl}
-                    date={noticia.date}
-                    id={noticia.id}
-                    client:only="react"
-                  />
-                </li>
-              ))}
-            </ul>
+  {pageExists ? (
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Columna de últimas noticias -->
+        <aside class="w-full lg:w-80 flex-shrink-0">
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Últimas Noticias</h2>
+          <div class="relative">
+            <div class="overflow-x-auto lg:overflow-visible scrollbar-hide px-4 sm:px-0">
+              <ul class="flex flex-row lg:flex-col gap-4 pb-4 lg:pb-0">
+                {noticias.map((noticia) => (
+                  <li class="flex-shrink-0">
+                    <Card
+                      title={noticia.title}
+                      imageUrl={noticia.imageUrl}
+                      date={noticia.date}
+                      id={noticia.id}
+                      client:only="react"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
+        </aside>
+
+        <!-- Línea separadora -->
+        <div class="hidden lg:block w-px bg-gray-200 self-stretch mx-2"></div>
+
+        <!-- Contenido principal -->
+     
+        <main class="flex-1 w-screen pr-8 md:pr-0">
+          <EditorComponent client:only="react" pageId={pageId}/>
+        </main>
+      </div>
+    </div>
+  ) : (
+    <div class="flex flex-col flex-grow items-center justify-center p-6 bg-white text-gray-900 h-screen">
+      <div class="text-center">
+        <!-- Icono de archivo -->
+        <div class="mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mx-auto text-customBlue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+            <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+            <path d="M5 17h-2v-11a1 1 0 0 1 1 -1h9v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5" />
+            <path d="M6 10h4m-2 -2v4" />
+          </svg>
         </div>
-      </aside>
 
-      <!-- Línea separadora -->
-      <div class="hidden lg:block w-px bg-gray-200 self-stretch mx-2"></div>
+        <!-- Texto de error 404 -->
+        <h1 class="text-6xl font-bold text-gray-800">404</h1>
+        <p class="text-lg text-gray-600 mt-2">
+          La página que buscas no existe.
+        </p>
 
-      <!-- Contenido principal -->
-      <main class="flex-1 w-full">
-        <EditorComponent client:only="react" pageId={pageId}/>
-      </main>
+        <!-- Enlace para volver al sitio -->
+        <a href="/" class="mt-6 inline-block text-customBlue hover:underline">
+          ⬅ Volver al inicio
+        </a>
+      </div>
     </div>
-  </div>
-) : (
-<div class="flex flex-col flex-grow items-center justify-center p-6 bg-white text-gray-900 h-screen">
-
-<div class="text-center">
-    <!-- Icono de archivo -->
-    <div class="mb-4">
-        <!-- Puedes reemplazar esto con una imagen similar a la que compartiste -->
-        
-        <svg  xmlns="http://www.w3.org/2000/svg"  class="h-32 w-32 mx-auto text-customBlue"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  
-                stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-ambulance">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                <path d="M5 17h-2v-11a1 1 0 0 1 1 -1h9v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5" />
-                <path d="M6 10h4m-2 -2v4" /></svg>
-    </div>
-
-    <!-- Texto de error 404 -->
-    <h1 class="text-6xl font-bold text-gray-800">404</h1>
-    <p class="text-lg text-gray-600 mt-2">
-        La página que buscas no existe.
-    </p>
-
-    <!-- Enlace para volver al sitio -->
-    <a href="/" class="mt-6 inline-block text-customBlue hover:underline">
-        ⬅ Volver al inicio
-    </a>
-</div>
-
-</div>
-)}
+  )}
 </Layout>
 
 <style>
