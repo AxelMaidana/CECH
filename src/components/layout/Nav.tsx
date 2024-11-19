@@ -57,12 +57,12 @@ export default function Component() {
     setOpenMobileMenus((prev) =>
       prev.includes(itemId) 
         ? prev.filter((id) => id !== itemId)
-        : [...prev, itemId]
-    )
-  }
+        : [itemId]
+    );
+  };
 
   const renderMenuItem = (item: MenuItem, depth: number = 0) => {
-    const children = getChildItems(item.id)
+    const children = getChildItems(item.id);
   
     return (
       <li key={item.id} className={`relative group ${depth === 0 ? 'flex-grow text-center border-r border-black border-opacity-20 last:border-0' : ''}`}>
@@ -89,47 +89,47 @@ export default function Component() {
   }
 
   const renderMobileMenuItem = (item: MenuItem, depth: number = 0) => {
-    const children = getChildItems(item.id)
-    const isOpen = openMobileMenus.includes(item.id)
+    const children = getChildItems(item.id);
+    const isOpen = openMobileMenus.includes(item.id);
 
     return (
       <li key={item.id} className={`w-full ${depth === 0 ? 'border-b border-black border-opacity-20' : ''}`}>
-        <div className="flex items-center justify-between px-2 py-3 transition-all duration-300 ease-in-out hover:shadow-lg">
+        {children.length > 0 ? (
+          <div
+            className={`flex items-center justify-between px-2 py-3 transition-all duration-300 ease-in-out hover:shadow-lg
+              ${depth === 0 ? 'font-semibold text-white' : 'text-white'}
+              cursor-pointer`}
+            onClick={() => toggleMobileSubmenu(item.id)}
+          >
+            <span className="flex-grow px-4">{item.title}</span>
+            <ChevronDown
+              className={`w-5 h-5 text-white transition-transform duration-300 ${
+                isOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </div>
+        ) : (
           <a
             href={`/${item.path.replace(/\//g, '-')}`}
-            className={`flex-grow px-4 ${depth === 0 ? 'font-semibold text-white' : 'text-white'}`}
+            className={`block px-6 py-3 transition-all duration-300 ease-in-out hover:shadow-lg
+              ${depth === 0 ? 'font-semibold text-white' : 'text-white'}`}
             onClick={toggleMenu}
           >
             {item.title}
           </a>
-          {children.length > 0 && (
-            <button
-              onClick={(e) => {
-                e.preventDefault()
-                toggleMobileSubmenu(item.id)
-              }}
-              className="p-2"
-            >
-              <ChevronDown
-                className={`w-5 h-5 text-white transition-transform duration-300 ${
-                  isOpen ? 'rotate-180' : ''
-                }`}
-              />
-            </button>
-          )}
-        </div>
+        )}
         {children.length > 0 && isOpen && (
           <ul className="pl-4 mb-2">
             {children.map((child) => renderMobileMenuItem(child, depth + 1))}
           </ul>
         )}
       </li>
-    )
-  }
+    );
+  };
 
   const renderSkeletonMenuItem = (depth: number = 0) => (
-    <li key={`skeleton-${depth}`} className={`relative ${depth === 0 ? 'flex-grow text-center border-r border-black border-opacity-20 last:border-0' : ''}`}>
-      <div className={`h-6 bg-customGreen rounded ${depth === 0 ? 'mx-2' : 'mx-4 my-2'}`}></div>
+    <li className={`relative ${depth === 0 ? 'flex-grow text-center border-r border-black border-opacity-20 last:border-0' : ''}`}>
+      <div className={`h-6 bg-customGreenm rounded ${depth === 0 ? 'mx-2' : 'mx-4'}`}></div>
     </li>
   )
 
@@ -137,9 +137,8 @@ export default function Component() {
     return (
       <nav className="bg-customGreen text-sm font-bold flex self-end lg:self-auto lg:justify-center lg:items-center rounded-l-xl lg:rounded-none lg:rounded-b-xl shadow-lg w-8 lg:w-full z-auto relative">
         <div className="container mx-auto py-1 flex justify-center items-center">
-          <div className="block lg:hidden w-6 h-6 bg-customGreen rounded"></div>
           <ul className="hidden lg:flex lg:flex-row lg:w-full">
-            {[...Array(5)].map((_, index) => renderSkeletonMenuItem(index))}
+            {[...Array(5)].map((_, index) => renderSkeletonMenuItem())}
           </ul>
         </div>
       </nav>
@@ -152,7 +151,6 @@ export default function Component() {
         <button
           className="block lg:hidden text-white focus:outline-none"
           onClick={toggleMenu}
-          aria-label="Toggle menu"
         >
           <Menu className="w-6 h-6" />
         </button>
@@ -172,12 +170,11 @@ export default function Component() {
       <div
         className={`fixed top-0 right-0 h-screen bg-customGreen w-full max-w-[300px] shadow-lg transform ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
-        } transition-transform duration-300 ease-in-out z-50 rounded-l-2xl overflow-y-auto lg:hidden`}
+        } transition-transform duration-300 ease-in-out z-40 rounded-l-2xl overflow-y-auto lg:hidden`}
       >
         <button
           className="absolute top-4 right-4 text-white text-3xl"
           onClick={toggleMenu}
-          aria-label="Close menu"
         >
           &times;
         </button>
