@@ -5,8 +5,9 @@ const { price } = Astro.props;
 <div class="
     flex flex-col 
     justify-between text-center 
-    py-8 | sm:p-4 | md:p-0 md:py-8
+    px-2 py-8 | sm:p-4 | md:p-0 md:py-8
     md:flex-col md:gap-3 | lg:flex-row
+    overflow-hidden
     ">
   <!-- Contenedor de Precio del Certificado -->
   <div class="
@@ -14,7 +15,7 @@ const { price } = Astro.props;
       text-white
       w-full md:w-3/5 lg:w-2/5
       py-6
-      bg-customBlue rounded-3xl | md:rounded-none md:rounded-r-2xl
+      bg-[#187498] rounded-3xl | md:rounded-none md:rounded-r-2xl
       shadow-custom shadow-black/40
       hover:scale-105 transition-all duration-300 ease-in-out mt-0 md:mt-0
       md:mr-auto
@@ -29,7 +30,7 @@ const { price } = Astro.props;
       text-white
       w-full md:w-3/5 lg:w-2/5
       py-6
-      bg-customBlue rounded-3xl | md:rounded-none md:rounded-l-2xl
+      bg-[#187498] rounded-3xl | md:rounded-none md:rounded-l-2xl
       shadow-custom shadow-black/40
       hover:scale-105 transition-all duration-300 ease-in-out mt-6 md:mt-0
       md:ml-auto

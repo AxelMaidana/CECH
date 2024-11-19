@@ -40,46 +40,52 @@ const pdfUrl = courseData.data()?.pdfUrl;
     <VistaBotonEditarCurso id={id} client:only="react" />
   </div>
 
-  <Banner 
-    title={courseData.data()?.title}
-    image={imageUrlWithDownload}
-    price={courseData.data()?.price}
-    modality={courseData.data()?.modality}    
-    duration={courseData.data()?.duration}
-    description={courseData.data()?.description}
-  />
-
-  <TextoPDF title="Descargar el contenido del curso" sizeText="text-md md:text-xl" borderRadius="rounded-3xl">
-    {pdfUrl ? (
-      <a href={pdfUrl + '?alt=media'} download="Programa_Curso.pdf" class="text-md font-light underline">
-        Descargar el programa en <strong>PDF</strong>
-      </a>
-    ) : (
-      <span class="text-md font-light">No hay PDF disponible.</span>
-    )}
-  </TextoPDF>
+  <div class="px-32 w-full items-center justify-center">
+        <div class="">
+          <Banner 
+          title={courseData.data()?.title}
+          image={imageUrlWithDownload}
+          price={courseData.data()?.price}
+          modality={courseData.data()?.modality}    
+          duration={courseData.data()?.duration}
+          description={courseData.data()?.description}
+        />
   
-  <!-- Pasamos los datos de los profesores a SectionDocente -->
-  <SectionDocente 
-    TitleSection="Profesores a cargo de la clase"
-    teachers={teachers}
-  />
-  
-  <InfoExtra 
-    TitleSection="Información extra"
-    duration={courseData.data()?.duration}
-    day={courseData.data()?.day}
-    hours={courseData.data()?.hours}
-    modality={courseData.data()?.modality}
-  />
-
-  <CardSide 
-    title={courseData.data()?.title}
-    hours={courseData.data()?.hours}
-    day={courseData.data()?.day}
-    modality={courseData.data()?.modality}
-    price={courseData.data()?.price}
-  />
-  
-  <Certificado />
+        <TextoPDF title="Descargar el contenido del curso" sizeText="text-md md:text-xl" borderRadius="rounded-3xl">
+          {pdfUrl ? (
+            <a href={pdfUrl + '?alt=media'} download="Programa_Curso.pdf" class="text-md font-light underline">
+              Descargar el programa en <strong>PDF</strong>
+            </a>
+          ) : (
+            <span class="text-md font-light">No hay PDF disponible.</span>
+          )}
+        </TextoPDF>
+        
+        <!-- Pasamos los datos de los profesores a SectionDocente -->
+        <div class="shadow-docente shadow-black/20 pt-20">
+          <SectionDocente 
+          TitleSection="Profesores a cargo de la clase"
+          teachers={teachers}
+        />
+        
+        <InfoExtra 
+        TitleSection="Información extra"
+        duration={courseData.data()?.duration}
+        day={courseData.data()?.day}
+        hours={courseData.data()?.hours}
+        modality={courseData.data()?.modality}
+        />
+        
+        <CardSide 
+        title={courseData.data()?.title}
+        hours={courseData.data()?.hours}
+        day={courseData.data()?.day}
+        modality={courseData.data()?.modality}
+        price={courseData.data()?.price}
+        />
+        
+        <Certificado />
+      </div>
+        </div>
+  </div>
 </Layout>

@@ -5,12 +5,28 @@ import { auth, db } from '../../firebase/client'; // Asegúrate de configurar tu
 
 interface Permissions {
   [key: string]: boolean; // Permisos específicos por pageId
-  verCursos: boolean;
-  editarCursos: boolean;
-  editarPanelDictamenes: boolean;
-  editarPanelInfoInstitucional: boolean;
-  editarPanelTramites: boolean;
-  editarPanelContacto: boolean;
+  verDashboardAdmin: boolean,
+  verCursos: boolean,
+  verNoticias: boolean,
+  verMatriculados: boolean,
+  agregarCurso: boolean,
+  eliminarCurso: boolean,
+  editarNoticias: boolean,
+  agregarNoticia: boolean,
+  eliminarNoticia: boolean,
+  agregarMatriculado: boolean,
+  editarPanelActAcademica: boolean,
+  editarPanelMatriculado: boolean,
+  editarPanelBecas: boolean,
+  editarPanelContacto: boolean,
+  editarPanelTramites: boolean,
+  editarPanelDictamenes: boolean,
+  editarPanelInfoInstitucional: boolean,
+  editarPanelNoticias: boolean,
+  agregarMiembro: boolean,
+  eliminarMiembro: boolean,
+  editarMiembro: boolean,
+  modificarPermisos: boolean,
 }
 
 interface PermissionsContextType {
@@ -22,12 +38,29 @@ const PermissionsContext = createContext<PermissionsContextType | undefined>(und
 
 export const PermissionsProvider = ({ children }) => {
   const [permissions, setPermissions] = useState<Permissions>({
-    verCursos: false,
-    editarCursos: false,
-    editarPanelDictamenes: false,
-    editarPanelInfoInstitucional: false,
-    editarPanelTramites: false,
-    editarPanelContacto: false,
+    verDashboardAdmin: false,
+        verCursos: false,
+        verNoticias: false,
+        verMatriculados: false,
+        agregarCurso: false,
+        agregarNoticia: false,
+        agregarMatriculado: false,
+        agregarMiembro: false,
+        editarNoticias: false,
+        editarMiembro: false,
+        editarCursos: false,
+        editarPanelActAcademica: false,
+        editarPanelMatriculado: false,
+        editarPanelBecas: false,
+        editarPanelTramites: false,
+        editarPanelDictamenes: false,
+        editarPanelContacto: false,
+        editarPanelInfoInstitucional: false,
+        editarPanelNoticias: false,
+        eliminarCurso: false,
+        eliminarNoticia: false,
+        eliminarMiembro: false,
+        modificarPermisos: false,
   });
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
@@ -59,12 +92,29 @@ export const PermissionsProvider = ({ children }) => {
       } else {
         setUserId(null);
         setPermissions({
-          verCursos: false,
-          editarCursos: false,
-          editarPanelDictamenes: false,
-          editarPanelInfoInstitucional: false,
-          editarPanelTramites: false,
-          editarPanelContacto: false,
+          verDashboardAdmin: false,
+        verCursos: false,
+        verNoticias: false,
+        verMatriculados: false,
+        agregarCurso: false,
+        agregarNoticia: false,
+        agregarMatriculado: false,
+        agregarMiembro: false,
+        editarNoticias: false,
+        editarMiembro: false,
+        editarCursos: false,
+        editarPanelActAcademica: false,
+        editarPanelMatriculado: false,
+        editarPanelBecas: false,
+        editarPanelTramites: false,
+        editarPanelDictamenes: false,
+        editarPanelContacto: false,
+        editarPanelInfoInstitucional: false,
+        editarPanelNoticias: false,
+        eliminarCurso: false,
+        eliminarNoticia: false,
+        eliminarMiembro: false,
+        modificarPermisos: false,
         });
         setLoading(false);
       }

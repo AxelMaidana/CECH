@@ -92,7 +92,7 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
                   {/* Muestra el uid del usuario directamente desde currentUser */}
                   <span>{userData.name} {userData.lastName}</span>
                   <span className="block text-xs text-cyan-400">
-                    {userData?.role === 'admin' ? 'Administrador' : userData?.role === 'user' ? 'Usuario' : 'Invitado'}
+                    {userData?.infoExtra}
                   </span>
                 </div>
               </h1>
@@ -112,10 +112,11 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
                         Perfil
                       </a>
                     </li>
-                    {userData?.role === 'admin' && (
+                    {/* Solo muestra el link si tiene el permiso de verDashboardAdmin */}
+                   { userData?.permissions.verDashboardAdmin && (
                       <li className="transform hover:scale-105 transition duration-200">
                         <a href="/admin/dashboard" className="flex items-center p-2 text-sm text-gray-900 rounded-lg hover:bg-gray-100 w-full text-left">
-                          Dashboard
+                          Gestor de Miembros
                         </a>
                       </li>
                     )}

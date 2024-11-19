@@ -1,0 +1,59 @@
+---
+import Layout from '../../layouts/LayoutHome.astro';
+import { db } from '../../firebase/client';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import Vista from '../../components/views/ViewTablaMatriculados';
+
+const { slug } = Astro.params;
+const pageId = slug || 'index';
+
+// Verifica si la página existe en Firestore
+const pageRef = doc(db, 'pages', pageId);
+const pageSnap = await getDoc(pageRef); // Cambié getDocs por getDoc
+
+let pageExists = pageSnap.exists();
+let pageTitle = pageExists ? pageSnap.data().pageId : 'Page Not Found';
+
+// Traer las noticias de la base de datos
+const noticiasCollection = collection(db, 'noticias');
+const querySnapshot = await getDocs(noticiasCollection);
+const noticias = querySnapshot.docs.map(doc => ({
+  id: doc.id,
+  ...doc.data()
+}));
+
+// Obtener los permisos del usuario
+const usersRef = collection(db, 'users');
+const usersSnapshot = await getDocs(usersRef);
+const permissions = {};
+let userId = false; // Inicializa userId como false
+usersSnapshot.forEach(doc => {
+  const userData = doc.data();
+  if (userData.permissions) {
+    Object.assign(permissions, userData.permissions);
+  }
+  // Verifica si el usuario está logueado
+  if (userData.uid) {
+    userId = true; // Cambia a true si hay un uid
+  }
+});
+
+---
+
+<Layout title={pageId}>
+<div class="w-full">
+    <!-- Hero -->
+    <section class="relative w-full h-[30rem] -mt-8 z-10">
+        <img src="/media/banner.png" alt="Imagen principal" class="absolute top-0 left-0 w-full h-full object-cover z-0" />
+        <div class="relative z-10 flex flex-col items-center justify-center h-full text-center md:text-center text-white bg-black bg-opacity-50">
+          <h2 class="text-xl md:text-5xl font-bold items-center tracking-wide">MATRICULADOS ACTIVOS</h2>
+        </div>
+      </section>
+      
+    <div class="w-full md:py-14 md:px-44 p-4 mb-20">
+        <!-- Contenido principal -->
+            <Vista client:only="react" /> 
+    </div>
+</div>
+</Layout>
+

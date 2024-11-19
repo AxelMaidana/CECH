@@ -172,14 +172,12 @@ const UserTable = () => {
     }
   };
 
-  
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, // Acepta select también
     field: keyof typeof modalUser
   ) => {
     const value = e.target.value;
-    
+
     // Validar el valor del campo de rol
     if (value !== 'admin' && value !== 'user') {
       setErrorMessage('Solo se permite "admin" o "user"');
@@ -193,7 +191,6 @@ const UserTable = () => {
       [field]: value,
     });
   };
-  
 
   const handleOpenPermissionsModal = (user: User) => {
     setSelectedUser(user);
@@ -223,33 +220,34 @@ const UserTable = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between">
-        <Input
-          type="text"
-          placeholder="Buscar por nombre, DNI o matrícula"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full max-w-sm border-customGreen rounded-3xl"
-        />
+    // si tiene el permiso de verDashboardAdmin, muestra el componente
 
-        {userPermissions.agregarMiembro && (
-          <RegisterModal />
-        )}
+      <div className="space-y-4">
+        <div className="flex justify-between">
+          <Input
+            type="text"
+            placeholder="Buscar por nombre, DNI o matrícula"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full max-w-sm border-customGreen rounded-3xl"
+          />
 
-      </div>
-      { loading ? <Spinner/> : (
-            <Table>
+          {userPermissions.agregarMiembro && (
+            <RegisterModal />
+          )}
+        </div>
+        {loading ? <Spinner /> : (
+          <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Nombre</TableHead>
                 <TableHead>DNI</TableHead>
                 <TableHead>Matrícula</TableHead>
                 <TableHead>Lugar de Origen</TableHead>
-                <TableHead>Info Extra</TableHead>
-              {userPermissions.editarMiembro && userPermissions.modificarPermisos && (
-                <TableHead>Acciones</TableHead>
-              )}
+                <TableHead>Cargo</TableHead>
+                {(userPermissions.editarMiembro || userPermissions.modificarPermisos) && (
+                  <TableHead>Acciones</TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -261,23 +259,24 @@ const UserTable = () => {
                     <TableCell>{user.matricula}</TableCell>
                     <TableCell>{user.lugarDeOrigen}</TableCell>
                     <TableCell>{user.infoExtra}</TableCell>
-                    {userPermissions.editarMiembro && userPermissions.modificarPermisos && (
+                    {(userPermissions.editarMiembro || userPermissions.modificarPermisos) && (
                     <TableCell>
-                    <div className="flex flex-col text-sm font-semibold gap-y-1">
-                    {userPermissions.editarMiembro && (
-                    <button 
-                      onClick={() => window.location.href = `/admin/perfil/${user.id}`} // Redirige al perfil del usuario usando su ID
-                      className="text-customBlue underline hover:text-cyan-900">
-                      Perfil
-                    </button>
-                    )}
-                    {userPermissions.modificarPermisos && (
-                      <button onClick={() => handleOpenPermissionsModal(user)} className="text-customBlue underline hover:text-cyan-900">
-                      Permisos
-                    </button>
-                    )}
-                    </div>
-                  </TableCell>
+                      <div className="flex flex-col text-sm font-semibold gap-y-1">
+                        {userPermissions.editarMiembro && (
+                          <button
+                            onClick={() => window.location.href = `/admin/perfil/${user.id}`} // Redirige al perfil del usuario usando su ID
+                            className="text-customBlue underline hover:text-cyan-900"
+                          >
+                            Perfil
+                          </button>
+                        )}
+                        {userPermissions.modificarPermisos && (
+                          <button onClick={() => handleOpenPermissionsModal(user)} className="text-customBlue underline hover:text-cyan-900">
+                            Permisos
+                          </button>
+                        )}
+                      </div>
+                    </TableCell>
                   )}
                   </TableRow>
                 ))
@@ -287,40 +286,40 @@ const UserTable = () => {
                 </TableRow>
               )}
             </TableBody>
-            </Table>
-      )}
+          </Table>
+        )}
 
-      {/* Paginate Buttons */}
-      <div className="mt-4 flex justify-between items-center">
-        <ButtonPagination
-          onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
-          className="text-sm font-semibold"
-        >
-          Anterior
-        </ButtonPagination>
-        <div className="flex gap-2">
-          {Array.from({ length: pageCount }, (_, index) => (
-            <ButtonPaginationNumber
-              key={index}
-              onClick={() => setCurrentPage(index + 1)}
-              className={currentPage === index + 1 ? 'bg-customBlue' : 'bg-gray-300 text-black'}
-            >
-              {index + 1}
-            </ButtonPaginationNumber>
-          ))}
+        {/* Paginate Buttons */}
+        <div className="mt-4 flex justify-between items-center">
+          <ButtonPagination
+            onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
+            className="text-sm font-semibold"
+          >
+            Anterior
+          </ButtonPagination>
+          <div className="flex gap-2">
+            {Array.from({ length: pageCount }, (_, index) => (
+              <ButtonPaginationNumber
+                key={index}
+                onClick={() => setCurrentPage(index + 1)}
+                className={currentPage === index + 1 ? 'bg-customBlue' : 'bg-gray-300 text-black'}
+              >
+                {index + 1}
+              </ButtonPaginationNumber>
+            ))}
+          </div>
+          <ButtonPagination
+            onClick={() => setCurrentPage(currentPage < pageCount ? currentPage + 1 : pageCount)}
+            className="text-sm font-semibold"
+          >
+            Siguiente
+          </ButtonPagination>
         </div>
-        <ButtonPagination
-          onClick={() => setCurrentPage(currentPage < pageCount ? currentPage + 1 : pageCount)}
-          className="text-sm font-semibold"
-        >
-          Siguiente
-        </ButtonPagination>
-      </div>
 
-      {isPermissionsModalOpen && selectedUser && (
-  <div className="fixed -inset-4 flex items-center justify-center z-50 bg-gray-500 bg-opacity-50">
-    <div className="bg-white text-customBlack p-8 sm:p-10 md:p-12 rounded-3xl shadow-lg max-w-7xl w-full transform transition-all duration-300 scale-100 opacity-100 translate-y-0 relative animate-fadeIn">
-      
+        {isPermissionsModalOpen && selectedUser && (
+  <div className="fixed -inset-4 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50 px-6 sm:px-10">
+    <div className="bg-white text-customBlack p-6 sm:p-8 md:p-10 rounded-3xl shadow-lg max-w-7xl w-full h-[90vh] overflow-hidden transform transition-all duration-300 scale-100 opacity-100 translate-y-0 relative animate-fadeIn">
+
       {/* Botón de cerrar */}
       <svg
         onClick={handleClosePermissionsModal}
@@ -334,53 +333,113 @@ const UserTable = () => {
         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
       </svg>
 
-      <h2 className="text-3xl text-customBlue sm:text-4xl text-center font-bold mb-12">
+      <h2 className="text-3xl text-customBlue sm:text-4xl text-center font-bold mb-2">
         Editar Permisos de <span className="font-bold text-gray-600">{selectedUser.name}</span>
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
-        {Object.keys(permissions).map(permission => (
-          <div key={permission} className="flex items-center space-x-3 min-w-[250px]">
-            <input
-              type="checkbox"
-              checked={permissions[permission]}
-              onChange={(e) =>
-                setPermissions({
-                  ...permissions,
-                  [permission]: e.target.checked,
-                })
-              }
-              className={`form-checkbox h-6 w-6 border-gray-300 rounded-md focus:ring-2 ${
-                permissions[permission] ? 'text-customGreen border-customGreen' : 'text-blue-600 focus:ring-blue-500'
-              }`}
-            />
-            <span
-              className={`text-md font-medium ${
-                permissions[permission] ? 'text-customGreen' : 'text-gray-700'
-              }`}
-            >
-              {permission.replace(/([A-Z])/g, ' $1').toUpperCase()}
-            </span>
+      {/* Contenedor de scroll para los permisos */}
+      <div className="overflow-y-auto 2xl:overflow-hidden max-h-[85%] p-4 rounded-2xl border border-black/10 mb-4">
+        {[
+           {
+            category: "Cursos",
+            permissions: {
+              agregarCurso: "Agregar Curso",
+              editarCursos: "Editar Curso",
+              eliminarCurso: "Eliminar Curso",
+              verCursos: "Ver Cursos",
+            },
+          },
+          {
+            category: "Noticias",
+            permissions: {
+              agregarNoticia: "Agregar Noticia",
+              editarNoticias: "Editar Noticia",
+              eliminarNoticia: "Eliminar Noticia",
+              verNoticias: "Ver Noticias",
+              editarPanelNoticias: "Editar Panel Noticias",
+            },
+          },
+          {
+            category: "Miembros",
+            permissions: {
+              agregarMatriculado: "Agregar Matriculado",
+              verMatriculados: "Ver Matriculados",
+              agregarMiembro: "Agregar Miembro",
+              editarMiembro: "Editar Miembro",
+              eliminarMiembro: "Eliminar Miembro",
+            },
+          },
+          {
+            category: "Paneles",
+            permissions: {
+              editarPanelActAcademica: "Editar Panel Actividades Académicas",
+              editarPanelBecas: "Editar Panel Becas",
+              editarPanelContacto: "Editar Panel Contacto",
+              editarPanelDictamenes: "Editar Panel Dictámenes",
+              editarPanelInfoInstitucional: "Editar Panel Info Institucional",
+              editarPanelMatriculado: "Editar Panel Matriculado",
+              editarPanelTramites: "Editar Panel Trámites",
+            },
+          },
+          {
+            category: "Administración General",
+            permissions: {
+              modificarPermisos: "Modificar Permisos",
+              verDashboardAdmin: "Ver Dashboard Admin",
+            },
+          },
+          // Resto de categorías...
+        ].map((group) => (
+          <div key={group.category} className="mb-4">
+            <h3 className="text-2xl font-bold text-customBlue mb-4">{group.category}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {Object.entries(group.permissions).map(([key, label]) => (
+                <div key={key} className="flex items-center space-x-3 min-w-[250px]">
+                  <input
+                    type="checkbox"
+                    checked={permissions[key]}
+                    onChange={(e) =>
+                      setPermissions({
+                        ...permissions,
+                        [key]: e.target.checked,
+                      })
+                    }
+                    className={`form-checkbox h-6 w-6 border-gray-300 rounded-md focus:ring-2 ${
+                      permissions[key]
+                        ? "text-customGreen border-customGreen"
+                        : "text-blue-600 focus:ring-blue-500"
+                    }`}
+                  />
+                  <span
+                    className={`text-md font-medium ${
+                      permissions[key] ? "text-customGreen" : "text-gray-700"
+                    }`}
+                  >
+                    {label}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="border-t border-gray-300 mt-2 w-full"></div>
           </div>
-        )
-        
-        )}
+        ))}
       </div>
 
-      <div className="mt-6 flex justify-end space-x-6">
-        <Button
+      {/* Botones de acción */}
+      <div className="sticky bottom-0 bg-white flex justify-center md:justify-end space-x-4 md:space-x-6">
+        <button
           onClick={handleClosePermissionsModal}
-          className="bg-gray-300 hover:bg-gray-400 text-black px-8 py-3 rounded-lg font-semibold transition duration-200"
+          className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-1 rounded-lg font-semibold transition duration-200 md:px-6 md:py-2"
         >
           Cancelar
-        </Button>
+        </button>
         {userPermissions.modificarPermisos && (
-          <Button
-          onClick={handleSavePermissions}
-          className="bg-customBlue hover:bg-cyan-800 text-white px-8 py-3 rounded-lg font-semibold transition duration-200"
-        >
-          Guardar Cambios
-        </Button>
+          <button
+            onClick={handleSavePermissions}
+            className="bg-customBlue hover:bg-cyan-800 text-white px-4 py-1 rounded-lg font-semibold transition duration-200 md:px-6 md:py-2"
+          >
+            Guardar
+          </button>
         )}
       </div>
     </div>
@@ -388,7 +447,8 @@ const UserTable = () => {
 )}
 
 
-    </div>
+      </div>
+   
   );
 };
 

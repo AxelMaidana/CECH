@@ -3,14 +3,14 @@ import Inscripcion from '../../modales/Inscripcion';
 const { title, image, price, modality, duration, description } = Astro.props;
 ---
 
-<div class="mx-auto p-2 md:p-6 w-full max-w-[1440px] rounded-3xl ">
+<div class="mx-auto w-full rounded-3xl shadow-banner shadow-black/20">
   <div class="relative w-auto md:h-[600px] overflow-hidden rounded-t-3xl">
     <img src={image} alt={`Imagen de ${title}`} class="w-full h-full object-cover" />
     <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
   </div>
 
   <div class="bg-white p-4 relative">
-    <div class="relative z-10">
+    <div class="relative z-10 px-6">
       <h1 class="md:text-7xl text-5xl font-bold mb-2">{title}</h1>
       <div class="flex flex-wrap gap-8 my-6">
         <div>
@@ -26,5 +26,5 @@ const { title, image, price, modality, duration, description } = Astro.props;
     </div>
   </div>
 
-  {/* Aquí insertas los modales */}
+  
 </div>

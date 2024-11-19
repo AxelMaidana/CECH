@@ -5,22 +5,25 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 // Definir el contexto
 interface Permissions {
+  verDashboardAdmin: boolean,
   verCursos: boolean,
-  editarCursos: boolean,
+  verNoticias: boolean,
+  verMatriculados: boolean,
   agregarCurso: boolean,
   eliminarCurso: boolean,
-  verNoticias: boolean,
   editarNoticias: boolean,
   agregarNoticia: boolean,
   eliminarNoticia: boolean,
-  verMatriculados: boolean,
   agregarMatriculado: boolean,
+  editarCursos: boolean,
+  editarPanelActAcademica: boolean,
   editarPanelMatriculado: boolean,
   editarPanelBecas: boolean,
   editarPanelContacto: boolean,
   editarPanelTramites: boolean,
   editarPanelDictamenes: boolean,
   editarPanelInfoInstitucional: boolean,
+  editarPanelNoticias: boolean,
   agregarMiembro: boolean,
   eliminarMiembro: boolean,
   editarMiembro: boolean,
@@ -39,26 +42,29 @@ const PermissionsContext = createContext<PermissionsContextType | undefined>(und
 export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [permissions, setPermissions] = useState<Permissions>(
     {
-      verCursos: false,
-      editarCursos: false,
-      agregarCurso: false,
-      eliminarCurso: false,
-      verNoticias: false,
-      editarNoticias: false,
-      agregarNoticia: false,
-      eliminarNoticia: false,
-      verMatriculados: false,
-      agregarMatriculado: false,
-      editarPanelMatriculado: false,
-      editarPanelBecas: false,
-      editarPanelContacto: false,
-      editarPanelTramites: false,
-      editarPanelDictamenes: false,
-      editarPanelInfoInstitucional: false,
-      agregarMiembro: false,
-      eliminarMiembro: false,
-      editarMiembro: false,
-      modificarPermisos: false,
+      verDashboardAdmin: false,
+        verCursos: false,
+        verNoticias: false,
+        verMatriculados: false,
+        agregarCurso: false,
+        agregarNoticia: false,
+        agregarMatriculado: false,
+        agregarMiembro: false,
+        editarNoticias: false,
+        editarMiembro: false,
+        editarCursos: false,
+        editarPanelActAcademica: false,
+        editarPanelMatriculado: false,
+        editarPanelBecas: false,
+        editarPanelTramites: false,
+        editarPanelDictamenes: false,
+        editarPanelContacto: false,
+        editarPanelInfoInstitucional: false,
+        editarPanelNoticias: false,
+        eliminarCurso: false,
+        eliminarNoticia: false,
+        eliminarMiembro: false,
+        modificarPermisos: false,
     }
   );
   const [loading, setLoading] = useState(true);
@@ -72,8 +78,31 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
         const unsubscribePermissions = onSnapshot(userRef, (docSnapshot) => {
           if (docSnapshot.exists()) {
-            const userData = docSnapshot.data();
-            setPermissions(userData.permissions || { verCursos: false, editarCursos: false, agregarCurso: false, eliminarCurso: false, verNoticias: false, editarNoticias: false, agregarNoticia: false, eliminarNoticia: false, verMatriculados: false, agregarMatriculado: false, editarPanelBecas: false, editarPanelMatriculado: false, editarPanelTramites: false, editarPanelDictamenes: false, editarPanelContacto: false, editarPanelInfoInstitucional: false, agregarMiembro: false, eliminarMiembro: false, editarMiembro: false, modificarPermisos: false });
+            const userData = docSnapshot.data();            
+            setPermissions(userData.permissions || { verDashboardAdmin: false,
+              verCursos: false,
+              verNoticias: false,
+              verMatriculados: false,
+              agregarCurso: false,
+              agregarNoticia: false,
+              agregarMatriculado: false,
+              agregarMiembro: false,
+              editarNoticias: false,
+              editarMiembro: false,
+              editarCursos: false,
+              editarPanelActAcademica: false,
+              editarPanelMatriculado: false,
+              editarPanelBecas: false,
+              editarPanelTramites: false,
+              editarPanelDictamenes: false,
+              editarPanelContacto: false,
+              editarPanelInfoInstitucional: false,
+              editarPanelNoticias: false,
+              eliminarCurso: false,
+              eliminarNoticia: false,
+              eliminarMiembro: false,
+              modificarPermisos: false,
+             });
           } else {
             console.log('No se encontró el documento del usuario');
           }
@@ -85,8 +114,31 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
         return () => unsubscribePermissions();
       } else {
-        setUserId(null);  
-        setPermissions({ verCursos: false, editarCursos: false, agregarCurso: false, eliminarCurso: false, verNoticias: false, editarNoticias: false, agregarNoticia: false, eliminarNoticia: false, verMatriculados: false, agregarMatriculado: false, editarPanelBecas: false, editarPanelMatriculado: false, editarPanelTramites: false, editarPanelDictamenes: false, editarPanelContacto: false, editarPanelInfoInstitucional: false, agregarMiembro: false, eliminarMiembro: false, editarMiembro: false, modificarPermisos: false });
+        setUserId(null);    
+        setPermissions({ verDashboardAdmin: false,
+          verCursos: false,
+          verNoticias: false,
+          verMatriculados: false,
+          agregarCurso: false,
+          agregarNoticia: false,
+          agregarMatriculado: false,
+          agregarMiembro: false,
+          editarNoticias: false,
+          editarMiembro: false,
+          editarCursos: false,
+          editarPanelActAcademica: false,
+          editarPanelMatriculado: false,
+          editarPanelBecas: false,
+          editarPanelTramites: false,
+          editarPanelDictamenes: false,
+          editarPanelContacto: false,
+          editarPanelInfoInstitucional: false,
+          editarPanelNoticias: false,
+          eliminarCurso: false,
+          eliminarNoticia: false,
+          eliminarMiembro: false,
+          modificarPermisos: false,
+         });
         setLoading(false);
       }
     });

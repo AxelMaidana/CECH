@@ -21,6 +21,9 @@ export default {
 		boxShadow: {
 			customButton: '6px 6px 6px rgba(0, 0, 0, 0.25)',
 			custom: '0px 4px 6px rgba(0, 0, 0, 0.25)',
+			banner: '0px -20px 24px 0px rgba(0, 0, 0, 1)',
+			//shadow solo en los lados
+			docente: '20px 40px 24px -20px rgba(0, 0, 0, 0.5), -20px 40px 24px -20px rgba(0, 0, 0, 0.5)',
 		},
 		colors: {
 		  customBlue: '#187498',

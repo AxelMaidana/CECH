@@ -13,7 +13,7 @@ const posts = querySnapshot.docs.map(doc => ({
 const Vista = () => {
   return (
     <PermissionsProvider>
-        <div className="grid gap-10 p-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 lg:mx-6 lg:gap-x-8 xl:grid-cols-4 2xl:grid-cols-4 mb-16">
+        <div className="grid gap-10 p-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 lg:mx-6 lg:gap-x-8 xl:grid-cols-4 2xl:grid-cols-4 mt-10 mb-16">
           {posts.map((post) => (
             <Card
               key={post.id}

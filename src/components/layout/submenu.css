@@ -1,0 +1,11 @@
+.submenu-item {
+    position: relative;
+  }
+  .submenu-item::after {
+    content: '';
+    position: absolute;
+    left: 5%;
+    bottom: 0;
+    width: 90%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  }

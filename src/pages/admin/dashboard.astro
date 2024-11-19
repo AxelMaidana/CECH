@@ -3,12 +3,13 @@
 import Layout from '../../layouts/Layout.astro';
 import Vista from '../../components/views/ViewTablaAdmin';
 import RouteGuard from '../../components/auth/ProtectedRole';
+import Pastilla from '../../components/ActAcademicas/detalle/Pastilla.astro';
 ---
 
 <RouteGuard client:only="react">
   <Layout title="Dashboard de Admin">
+    <Pastilla title="Dashboard de Admin" />
     <main class="container mx-auto mt-8 p-4 h-screen ">
-      <h1 class="text-3xl font-bold mb-4">Dashboard de Admin</h1>
         <Vista client:only="react" />
     </main>
   </Layout>

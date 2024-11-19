@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { auth, db } from '../../firebase/client';
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
-
+import { db } from '../../firebase/client';
 
 export const initializeModalMiembro = (modalId) => {
   const modal = document.getElementById(modalId);
@@ -25,79 +24,89 @@ const RegisterModal = () => {
   const [name, setName] = useState('');
   const [birthday, setBirthday] = useState('');
   const [lastname, setLastname] = useState('');
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState('user'); // Valor predeterminado
   const [dni, setDni] = useState('');
   const [matricula, setMatricula] = useState('');
   const [lugarDeOrigen, setLugarDeOrigen] = useState('');
   const [infoExtra, setInfoExtra] = useState('');
-  const [image, setImage] = useState(''); // Campo de imagen predeterminado vacío
+  const [image, setImage] = useState('');
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (!email || !password || !name || !lastname) {
+      alert('Por favor, completa todos los campos obligatorios.');
+      return;
+    }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(getAuth(), email, password);
       const user = userCredential.user;
 
-      const permisosPredeterminados = {
-        verCursos: false,
-        editarCursos: false,
-        agregarCurso: false,
-        eliminarCurso: false,
-        verNoticias: false,
-        editarNoticias: false,
-        agregarNoticia: false,
-        eliminarNoticia: false,
-        verMatriculados: false,
-        agregarMatriculado: false,
-        editarPanelMatriculado: false,
-        editarPanelBecas: false,
-        editarPanelTramites: false,
-        editarPanelDictamenes: false,
-        editarPanelContacto: false,
-        editarPanelInfoInstitucional: false,
-        agregarMiembro: false,
-        eliminarMiembro: false,
-        editarMiembro: false,
-        modificarPermisos: false,
-      };
-
-      await setDoc(doc(db, 'users', user.uid), {
+      const userData = {
         name,
+        lastname,
         email,
         birthday,
-        lastname,
-        role,
         dni,
         matricula,
         lugarDeOrigen,
         infoExtra,
-        image: image || '', // Guarda el valor de la imagen o cadena vacía por defecto
-        permissions: permisosPredeterminados,
-      });
+        role,
+        image: image || '',
+        permissions: {
+          verDashboardAdmin: false,
+          verCursos: false,
+          verNoticias: false,
+          verMatriculados: false,
+          agregarCurso: false,
+          agregarNoticia: false,
+          agregarMatriculado: false,
+          agregarMiembro: false,
+          editarNoticias: false,
+          editarMiembro: false,
+          editarCursos: false,
+          editarPanelActAcademica: false,
+          editarPanelMatriculado: false,
+          editarPanelBecas: false,
+          editarPanelTramites: false,
+          editarPanelDictamenes: false,
+          editarPanelContacto: false,
+          editarPanelInfoInstitucional: false,
+          editarPanelNoticias: false,
+          eliminarCurso: false,
+          eliminarNoticia: false,
+          eliminarMiembro: false,
+          modificarPermisos: false,
+        },
+      };
 
+      await setDoc(doc(db, 'users', user.uid), userData);
+      console.log('Usuario creado exitosamente:', user.uid);
       closeModalMiembro('register-modal');
-      setEmail('');
-      setPassword('');
-      setName('');
-      setBirthday('');
-      setLastname('');
-      setRole('');
-      setDni('');
-      setMatricula('');
-      setLugarDeOrigen('');
-      setInfoExtra('');
-      setImage('');
-
+      resetForm();
     } catch (error) {
       console.error('Error al registrarse:', error);
       alert(`Error al registrarse: ${error.message}`);
     }
   };
 
+  const resetForm = () => {
+    setEmail('');
+    setPassword('');
+    setName('');
+    setBirthday('');
+    setLastname('');
+    setRole('user');
+    setDni('');
+    setMatricula('');
+    setLugarDeOrigen('');
+    setInfoExtra('');
+    setImage('');
+  };
+
   return (
     <div>
-      {/* Botón para abrir el modal */}
       <button
         onClick={() => openModalMiembro('register-modal')}
         className="bg-[#187498] hover:scale-105 transition duration-300 ease-in-out text-white px-4 py-2 rounded-xl text-md font-semibold"
@@ -105,7 +114,6 @@ const RegisterModal = () => {
         Agregar Miembro
       </button>
 
-      {/* Modal */}
       <div
         id="register-modal"
         className="flex justify-center items-center fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden"
@@ -124,7 +132,7 @@ const RegisterModal = () => {
           </svg>
 
           <form onSubmit={handleRegister} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-            <h2 className="text-3xl text-customBlue sm:text-4xl text-center font-bold col-span-2 mt-2 mb-6">Registrarse</h2>
+            <h2 className="text-3xl text-customBlue sm:text-4xl text-center font-bold col-span-2 mt-2 mb-6 uppercase">Inscribir a un Miembro</h2>
 
             <input
               type="text"
@@ -132,6 +140,7 @@ const RegisterModal = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="border outline-none border-customBlack rounded-2xl w-full p-2"
+              required
             />
             <input
               type="text"
@@ -139,6 +148,7 @@ const RegisterModal = () => {
               value={lastname}
               onChange={(e) => setLastname(e.target.value)}
               className="border outline-none border-customBlack rounded-2xl w-full p-2"
+              required
             />
             <input
               type="email"
@@ -146,6 +156,7 @@ const RegisterModal = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="border outline-none border-customBlack rounded-2xl w-full p-2"
+              required
             />
             <input
               type="date"
@@ -182,28 +193,23 @@ const RegisterModal = () => {
               onChange={(e) => setInfoExtra(e.target.value)}
               className="border outline-none border-customBlack rounded-2xl w-full p-2"
             />
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="border outline-none border-customBlack rounded-2xl w-full p-2"
-            >
-              <option value="user">Usuario</option>
-              <option value="admin">Administrador</option>
-            </select>
             <input
               type="password"
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="border outline-none border-customBlack rounded-2xl w-full p-2"
+              required
             />
 
-            <button
-              type="submit"
-              className="bg-customBlue transition duration-300 hover:scale-105 text-white text-sm font-semibold px-6 py-3 rounded-xl w-full mt-4 col-span-2"
-            >
-              Registrarse
-            </button>
+            <div className='flex justify-end col-span-2 mt-4 mb-6'>
+              <button
+                type="submit"
+                className="bg-[#187498] transition duration-300 hover:scale-105 text-white text-md font-semibold px-6 py-3 rounded-xl w-full sm:w-fit mt-4"
+              >
+                Registrarse
+              </button>
+            </div>
           </form>
         </div>
       </div>

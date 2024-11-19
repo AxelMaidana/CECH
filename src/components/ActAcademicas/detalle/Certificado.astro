@@ -1,7 +1,13 @@
 --- 
 import Certificadoo from '../../modales/Certificado';
+import { db } from '../../../firebase/client';
+import { doc, getDoc } from 'firebase/firestore';
 
 const { postId, postTitulo } = Astro.props;
+
+const { id } = Astro.params;
+const courseDoc = doc(db, 'posts', id);
+const courseData = await getDoc(courseDoc);
 ---
 
 <div class="flex flex-col md:flex-row py-10 px-6 md:px-10 lg:px-20 xl:px-40 justify-between items-center bg-[url('/media/certificado.png')] bg-cover bg-center bg-no-repeat relative">
@@ -15,7 +21,7 @@ const { postId, postTitulo } = Astro.props;
     </div>
     
     <div class="relative z-10 mt-8 | md:mt-0 | lg:p-0">
-            <Certificadoo client:only="react" postId={postId} postTitulo={postTitulo} />
+            <Certificadoo client:only="react" postId={id} postTitulo={postTitulo} />
     </div>
 
 </div>
