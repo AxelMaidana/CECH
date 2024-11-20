@@ -29,7 +29,9 @@ const { title } = Astro.props;
 		<ViewTransitions />
 		<Header />
 
-		<MostrarNav client:only="react" />
+		<div class="flex self-end lg:self-auto">
+			<MostrarNav client:only="react" />
+		</div>
 		
 		<slot />
 		<Footer 
