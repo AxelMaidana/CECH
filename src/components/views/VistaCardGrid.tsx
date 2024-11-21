@@ -3,8 +3,7 @@ import { PermissionsProvider } from '../auth/PermissionsProvider';
 import { db } from '../../firebase/client';
 import { collection, query, getDocs, orderBy, startAfter, limit } from 'firebase/firestore';
 import Card from '../common/Card';
-import TextoInformativo from '../ActAcademicas/TextoInformativo.astro';
-import Pastilla from '../ActAcademicas/detalle/Pastilla.astro';
+import VistaCrearCurso from './VistaBotonCrearCurso'; 
 
 const Vista = () => {
   const [posts, setPosts] = useState([]); // Posts a mostrar por página
@@ -93,18 +92,21 @@ const Vista = () => {
           </div>
 
         {/* Campo de búsqueda */}
-            <div className="relative flex w-fit items-center ml-1 md:ml-4 md:mr-5 border-2 border-customGreen rounded-3xl">
-              <input
-                type="text"
-                placeholder="Buscar cursos..."
-                className="md:h-10 h-7 md:w-72 w-36 md:px-5 px-3 md:pr-10 text-sm bg-gray-100 rounded-3xl focus:outline-none"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center md:pr-3 pr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" />
-                </svg>
+            <div className='flex gap-2 items-center'>
+              <VistaCrearCurso />
+              <div className="relative flex w-fit items-center ml-1 md:ml-4 md:mr-5 border-2 border-customGreen rounded-3xl">
+                <input
+                  type="text"
+                  placeholder="Buscar cursos..."
+                  className="md:h-10 h-7 md:w-72 w-36 md:px-5 px-3 md:pr-10 text-sm bg-gray-100 rounded-3xl focus:outline-none"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center md:pr-3 pr-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" />
+                  </svg>
+                </div>
               </div>
             </div>
         </div>

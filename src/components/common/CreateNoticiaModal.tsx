@@ -3,6 +3,16 @@ import { db } from '../../firebase/client';
 import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
+// Función para formatear la fecha en "dd/mm/yyyy"
+const formatDate = (date: string) => {
+  const d = new Date(date); // Convertir la fecha al formato de Date
+  const day = String(d.getDate()).padStart(2, '0'); // Obtener el día con 2 dígitos
+  const month = String(d.getMonth() + 1).padStart(2, '0'); // Obtener el mes con 2 dígitos (meses comienzan en 0)
+  const year = d.getFullYear(); // Obtener el año
+  return `${day}/${month}/${year}`; // Formato "dd/mm/yyyy"
+};
+
+
 interface CreateNoticiaModalProps {
   onClose: () => void;
   editData?: {
@@ -28,7 +38,8 @@ export default function CreateNoticiaModal({ onClose, editData }: CreateNoticiaM
       setTitle(editData.title || '');
       setDescription(editData.description || '');
       setPreviewUrl(editData.imageUrl || '');
-      const formattedDate = editData.date ? new Date(editData.date).toISOString().split('T')[0] : '';
+      // Formatear la fecha al formato "dd/mm/yyyy"
+      const formattedDate = editData.date ? formatDate(editData.date) : '';
       setDate(formattedDate);
     }
     setLoading(false); // Oculta el mensaje de "Cargando..." cuando los datos están listos
@@ -49,10 +60,10 @@ export default function CreateNoticiaModal({ onClose, editData }: CreateNoticiaM
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-
+  
     try {
       let imageUrl = editData?.imageUrl || '';
-
+  
       if (imageFile) {
         const storage = getStorage();
         if (editData?.imageUrl) {
@@ -63,26 +74,29 @@ export default function CreateNoticiaModal({ onClose, editData }: CreateNoticiaM
             console.error('Error al eliminar la imagen antigua:', error);
           }
         }
-
+  
         const imageRef = ref(storage, `noticias/${Date.now()}-${imageFile.name}`);
         await uploadBytes(imageRef, imageFile);
         imageUrl = await getDownloadURL(imageRef);
       }
-
+  
+      // Formatear la fecha antes de guardarla
+      const formattedDate = formatDate(date);
+  
       const noticiaData = {
         title,
         description,
         imageUrl,
-        date,
+        date: formattedDate, // Guardar la fecha formateada
       };
-
+  
       if (editData) {
         const noticiaRef = doc(db, 'noticias', editData.id);
         await updateDoc(noticiaRef, noticiaData);
       } else {
         await addDoc(collection(db, 'noticias'), noticiaData);
       }
-
+  
       onClose();
       window.location.reload();
     } catch (error) {
@@ -92,6 +106,7 @@ export default function CreateNoticiaModal({ onClose, editData }: CreateNoticiaM
       setSaving(false);
     }
   };
+  
 
   if (loading) {
     return (

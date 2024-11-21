@@ -17,6 +17,7 @@ interface NewsArticledivProps {
 export default function NewsArticlediv({ id, title, description, imageUrl, date }: NewsArticledivProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false) // Estado para el modal de confirmación de eliminación
   const { permissions, loading, userId } = usePermissions()
 
   const handleEdit = () => {
@@ -27,24 +28,34 @@ export default function NewsArticlediv({ id, title, description, imageUrl, date 
     setIsModalOpen(false)
   }
 
-  const handleDelete = async () => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este artículo?')) {
-      setIsDeleting(true)
-      try {
-        const noticiaDoc = doc(db, 'noticias', id)
-        await deleteDoc(noticiaDoc)
+  const openDeleteModal = () => {
+    setIsConfirmDeleteModalOpen(true) // Abrir el modal de confirmación
+  }
 
-        if (imageUrl) {
-          const storage = getStorage()
-          const imageRef = ref(storage, imageUrl)
-          await deleteObject(imageRef)
-        }
-      } catch (error) {
-        console.error('Error al eliminar el artículo:', error)
-        alert('Error al eliminar el artículo.')
-      } finally {
-        setIsDeleting(false)
+  const closeDeleteModal = () => {
+    setIsConfirmDeleteModalOpen(false) // Cerrar el modal de confirmación
+    window.location.reload() // Recargar la página
+  }
+
+  const handleDelete = async () => {
+    setIsDeleting(true)
+    try {
+      const noticiaDoc = doc(db, 'noticias', id)
+      await deleteDoc(noticiaDoc)
+
+      if (imageUrl) {
+        const storage = getStorage()
+        const imageRef = ref(storage, imageUrl)
+        await deleteObject(imageRef)
       }
+      closeDeleteModal() // Cerrar modal de confirmación al eliminar
+      //reload
+  
+    } catch (error) {
+      console.error('Error al eliminar el artículo:', error)
+      alert('Error al eliminar el artículo.')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -80,7 +91,7 @@ export default function NewsArticlediv({ id, title, description, imageUrl, date 
             {permissions.eliminarNoticia && (
               <button
                 className="rounded-full bg-[#187498] p-2 shadow-sm shadow-black/40"
-                onClick={handleDelete}
+                onClick={openDeleteModal} // Abre el modal de confirmación
                 disabled={isDeleting}
               >
                 <Trash2 className="h-3 w-3 text-white" />
@@ -103,6 +114,31 @@ export default function NewsArticlediv({ id, title, description, imageUrl, date 
           />
         )}
       </div>
+
+      {/* Modal de confirmación de eliminación */}
+      {isConfirmDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-sm w-full">
+            <h3 className="text-xl font-semibold mb-4">¿Estás seguro?</h3>
+            <p className="mb-4">Esta acción no se puede deshacer. ¿Deseas eliminar esta noticia?</p>
+            <div className="flex justify-between">
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Eliminando...' : 'Eliminar'}
+              </button>
+              <button
+                className="bg-gray-300 text-black px-4 py-2 rounded-lg"
+                onClick={closeDeleteModal}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
