@@ -3,18 +3,20 @@ const { teachers, TitleSection } = Astro.props;
 ---
 
 <!-- Título del contenedor -->
-<h3 class="text-2xl text-center text-customBlack font-bold pl-4 pb-4 | md:text-3xl | lg:text-start lg:pl-10">{TitleSection}</h3>
+<h3 class="text-2xl text-center text-customBlack font-bold pl-4 pb-4 | md:text-3xl md:pl-0 | lg:text-start lg:pl-10">
+  {TitleSection}
+</h3>
 
 <!-- Contenedor de docentes -->
 <div class="container mx-auto mb-6 py-4 grid grid-cols-1 gap-10 justify-center items-center lg:grid-cols-2 lg:px-16">
   {teachers.map((teacher) => (
-    <div class="flex flex-col lg:flex-row items-start space-x-0 lg:space-x-4 space-y-4 lg:space-y-0">
+    <div class="flex flex-col lg:flex-row lg:items-start items-center text-center md:text-center lg:text-left space-x-0 lg:space-x-4 space-y-4 lg:space-y-0">
       <!-- Imagen redonda -->
       <img src={teacher.imageUrl} alt={teacher.name} class="w-32 h-32 rounded-full object-cover bg-slate-100" />
       <!-- Título y descripción -->
-      <div class="text-center lg:text-left flex-1">
+      <div class="flex-1">
         <h2 class="text-xl font-semibold mb-2">{teacher.name}</h2>
-        <p class="text-gray-700 max-w-xs lg:max-w-sm break-words">{teacher.description}</p>
+        <p class="text-gray-700 max-w-xs lg:max-w-sm break-words mx-auto lg:mx-0">{teacher.description}</p>
       </div>
     </div>
   ))}

@@ -3,6 +3,7 @@ import Layout from '../../layouts/LayoutHome.astro';
 import { db } from '../../firebase/client';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import Vista from '../../components/views/ViewTablaMatriculados';
+import AutenticacionRequerida from '../../components/auth/AutenticacionRequerida';
 
 const { slug } = Astro.params;
 const pageId = slug || 'index';
@@ -40,6 +41,7 @@ usersSnapshot.forEach(doc => {
 
 ---
 
+  <AutenticacionRequerida client:only="react">
 <Layout title={pageId}>
 <div class="w-full">
     <!-- Hero -->
@@ -56,4 +58,4 @@ usersSnapshot.forEach(doc => {
     </div>
 </div>
 </Layout>
-
+</AutenticacionRequerida>

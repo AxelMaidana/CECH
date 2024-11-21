@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import UserProfile from '../../components/user/UserProfile';
 import Pastilla from '../../components/ActAcademicas/detalle/Pastilla.astro';
-
+import AutenticacionRequerida from '../../components/auth/AutenticacionRequerida';
 const { uid } = Astro.params;
 ---
 
@@ -11,8 +11,10 @@ const { uid } = Astro.params;
     title="Perfil de usuario"
   />
 
-    <UserProfile client:only="react" userId={uid}/>
-    <div class="mb-8"></div>
-  
+  <AutenticacionRequerida client:only = "react">
+      <UserProfile client:only="react" userId={uid}/>
+      <div class="mb-8"></div>
+  </AutenticacionRequerida>
+
 </Layout>
 

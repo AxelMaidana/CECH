@@ -1,13 +1,15 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import CourseEditor from '../../../../components/CourseEditor';
+import AutenticacionRequerida from '../../../../components/auth/AutenticacionRequerida';
 
 const { id } = Astro.params;
 ---
 
+<AutenticacionRequerida client:only="react">
 <Layout title="Editar Curso">
   <main>
     <CourseEditor client:only="react" courseId={id} />
   </main>
 </Layout>
-
+</AutenticacionRequerida>

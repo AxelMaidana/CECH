@@ -63,7 +63,8 @@ export function OnOffButton({ userId, courseId }) {
 
     setUploading(true);
     try {
-      const fileRef = ref(storage, `certificados/${userId}/${courseId}/${file.name}`);
+      // Generar una referencia única para el archivo
+      const fileRef = ref(storage, `certificados/${userId}/${courseId}/${Date.now()}-${file.name}`);
       await uploadBytes(fileRef, file);
       const url = await getDownloadURL(fileRef);
 
@@ -86,11 +87,11 @@ export function OnOffButton({ userId, courseId }) {
       {/* Mostrar el botón para subir certificado si aún no se ha subido */}
       {!fileUploaded && (
         <div className="w-full text-center">
-          <label htmlFor="upload-cert" className="cursor-pointer bg-white/90 text-customBlack shadow-md px-4 py-1 rounded-full text-xs font-semibold">
+          <label htmlFor={`upload-cert-${courseId}`} className="cursor-pointer bg-white/90 text-customBlack shadow-md px-4 py-1 rounded-full text-xs font-semibold">
             {uploading ? 'Subiendo...' : 'Subir Certificado'}
           </label>
           <input
-            id="upload-cert"
+            id={`upload-cert-${courseId}`}
             type="file"
             accept=".pdf,.doc,.docx,.jpg,.png"
             className="hidden"

@@ -10,7 +10,7 @@ export default function UserProfile({ userId }) {
   const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    lastName: '',
+    lastname: '',
     email: '',
     address: '',
     dni: '',
@@ -31,7 +31,7 @@ export default function UserProfile({ userId }) {
           setUserData(data);
           setFormData({
             name: data.name || '',
-            lastName: data.lastName || '',
+            lastname: data.lastname || '',
             email: data.email || '',
             address: data.address || '',
             dni: data.dni || '',
@@ -154,15 +154,15 @@ export default function UserProfile({ userId }) {
   return (
     <div className="max-w-7xl w-full mx-auto p-4 md:p-8 mb-auto rounded-3xl shadow-md bg-white">
       <h1 className="text-4xl text-customBlack font-bold uppercase mb-12 text-center">
-        {userData.name} {userData.lastName}
+        {userData.name} {userData.lastname}
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="flex flex-col items-center md:col-span-1">
         <div className="relative flex flex-col items-center rounded-full overflow-hidden cursor-pointer">
           <img
-            src={imagePreview || 'https://i.pinimg.com/enabled_lo/564x/1e/f6/42/1ef642c4c5864a930b260941dff37711.jpg'}
+            src={imagePreview || 'https://i.pinimg.com/564x/f2/15/41/f21541d5d59eceb63be66d5f5eb6d42c.jpg'}
             alt="Imagen de perfil"
-            className="w-32 h-32 md:w-60 md:h-60 object-cover mb-2 rounded-full"  // Asegúrate de que el contenedor de la imagen sea circular también
+            className="w-32 h-32 md:w-60 md:h-60 object-cover mb-2 rounded-full shadow-md shadow-gray-300"  // Asegúrate de que el contenedor de la imagen sea circular también
           />
           <div
             className="absolute inset-0 w-32 h-32 md:w-60 md:h-60 rounded-full flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
@@ -216,7 +216,7 @@ export default function UserProfile({ userId }) {
                 name="lastName"
                 placeholder="Apellidos"
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm bg-white text-gray-500 px-4 py-2"
-                value={formData.lastName}
+                value={formData.lastname}
                 onChange={handleChange}
               />
             </div>
@@ -237,13 +237,7 @@ export default function UserProfile({ userId }) {
             <div>
               <div className="flex justify-between">
                 <label htmlFor="password" className="block text-sm font-semibold text-gray-700">Contraseña</label>
-                <button
-                  type="button"
-                  onClick={() => setIsPasswordEditing((prev) => !prev)}
-                  className="text-sm font-light underline"
-                >
-                  {isPasswordEditing ? 'Cancelar' : 'Editar'}
-                </button>
+              
               </div>
               <input
                 type={isPasswordEditing ? 'password' : 'text'}

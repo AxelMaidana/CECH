@@ -1,13 +1,15 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import NoticiaEditor from '../../../../components/noticias/editNoticia';
+import AutenticacionRequerida from '../../../../components/auth/AutenticacionRequerida';
 
 const { id } = Astro.params;
 ---
 
+<AutenticacionRequerida client:only="react">
 <Layout title="Editar Noticia">
   <main>
     <NoticiaEditor client:only="react" noticiaId={id} />
   </main>
 </Layout>
-
+</AutenticacionRequerida>

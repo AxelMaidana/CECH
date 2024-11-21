@@ -1,55 +1,73 @@
 import React, { useState } from 'react';
 import { auth, db } from '../../firebase/client';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { collection, query, where, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
 
 const LoginModal = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(''); // Limpiar errores previos
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+    setMessage(''); // Limpiar mensaje previo
 
-      // Verificar y obtener datos del usuario desde Firestore
-      await checkLogin(user.uid);
+    try {
+      // Verificar si el email existe en Firestore
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('email', '==', email));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        setMessage('El usuario no está registrado. Por favor, regístrate primero.');
+        return;
+      }
+
+      let userCredential;
+
+      try {
+        // Intentar iniciar sesión con Firebase Auth
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+        // Si el inicio de sesión es exitoso, no hacer cambios en Firestore
+        setMessage('¡Inicio de sesión exitoso!');
+        window.location.href = `/`;
+        return;
+      } catch (signInError) {
+        // Si el inicio de sesión falla, creamos el usuario en Firebase Auth
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        setMessage('¡Registro y creación exitosos en Firebase Auth!');
+      }
+
+      // Obtener el primer documento del usuario en Firestore
+      const userDoc = querySnapshot.docs[0];
+      const userDocRef = doc(db, 'users', userDoc.id);
+
+      // Crear un nuevo documento en Firestore con el UID del nuevo usuario
+      const user = userCredential.user;
+      const newUserDocRef = doc(db, 'users', user.uid);
+
+      await setDoc(newUserDocRef, {
+        ...userDoc.data(),
+      });
+
+      // Eliminar el documento antiguo
+      await deleteDoc(userDocRef);
+
+      // Redirigir al perfil del usuario
+      window.location.href = `/`;
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      if (error.code === 'auth/invalid-credential') {
-        setError('Email o contraseña incorrectos. Por favor, inténtalo de nuevo.');
-      } else {
-        setError('Ha ocurrido un error al iniciar sesión. Por favor, inténtalo de nuevo más tarde.');
-      }
+      setError('Hubo un error al intentar iniciar sesión. Por favor, intenta de nuevo.');
     }
   };
-
-  // Función para verificar los permisos del usuario
-  const checkLogin = async (userId) => {
-    try {
-      const userDoc = await getDoc(doc(db, 'users', userId));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        
-        // Guardar permisos en localStorage o estado
-        localStorage.setItem('userPermissions', JSON.stringify(userData.permissions || {}));
-        window.location.href = '/';
-      } else {
-        setError('El usuario no tiene permisos asignados.');
-      }
-    } catch (error) {
-      console.error('Error al obtener datos de usuario:', error);
-      setError('Ha ocurrido un error al verificar los datos del usuario.');
-    }
-  };
-  
 
   const closeModal = () => {
     document.getElementById('login-modal').classList.add('hidden');
     setError('');
+    setMessage('');
   };
 
   const handleOverlayClick = (e) => {
@@ -107,6 +125,7 @@ const LoginModal = () => {
             </button>
           </div>
 
+          {message && <p className="text-green-500 text-sm mt-2 text-center">{message}</p>}
           {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
         </form>
       </div>

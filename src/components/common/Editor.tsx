@@ -152,7 +152,7 @@ export default function EditorComponent({ pageId }: EditorComponentProps) {
             </button>
           </div>
         )}
-        <div className="mx-auto lg:mx-0 prose prose-sm sm:prose lg:prose-lg" dangerouslySetInnerHTML={{ __html: content }} />
+        <div className="mx-auto lg:mx-0 prose prose-sm sm:prose lg:prose-lg xl:prose-xl 2xl:prose-2xl" dangerouslySetInnerHTML={{ __html: content }} />
       </div>
     );
   }

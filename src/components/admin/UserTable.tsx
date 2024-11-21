@@ -223,7 +223,7 @@ const UserTable = () => {
     // si tiene el permiso de verDashboardAdmin, muestra el componente
 
       <div className="space-y-4">
-        <div className="flex justify-between">
+        <div className="flex justify-between gap-2">
           <Input
             type="text"
             placeholder="Buscar por nombre, DNI o matrícula"
@@ -338,9 +338,9 @@ const UserTable = () => {
       </h2>
 
       {/* Contenedor de scroll para los permisos */}
-      <div className="overflow-y-auto 2xl:overflow-hidden max-h-[85%] p-4 rounded-2xl border border-black/10 mb-4">
+      <div className="overflow-y-scroll max-h-[75vh] p-4 rounded-2xl border border-black/10 mb-4">
         {[
-           {
+          {
             category: "Cursos",
             permissions: {
               agregarCurso: "Agregar Curso",
@@ -362,7 +362,6 @@ const UserTable = () => {
           {
             category: "Miembros",
             permissions: {
-              agregarMatriculado: "Agregar Matriculado",
               verMatriculados: "Ver Matriculados",
               agregarMiembro: "Agregar Miembro",
               editarMiembro: "Editar Miembro",
@@ -388,7 +387,6 @@ const UserTable = () => {
               verDashboardAdmin: "Ver Dashboard Admin",
             },
           },
-          // Resto de categorías...
         ].map((group) => (
           <div key={group.category} className="mb-4">
             <h3 className="text-2xl font-bold text-customBlue mb-4">{group.category}</h3>
@@ -445,6 +443,7 @@ const UserTable = () => {
     </div>
   </div>
 )}
+
 
 
       </div>

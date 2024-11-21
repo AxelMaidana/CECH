@@ -1,19 +1,18 @@
 ---
 // src/pages/admin/dashboard.astro
-import Layout from '../../layouts/LayoutPage.astro';
+import Layout from '../../layouts/Layout.astro';
 import Vista from '../../components/views/ViewTablaAdmin';
-import RouteGuard from '../../components/auth/ProtectedRole';
+import PermisosDelUsuario from '../../components/auth/PermisosDelUsuario';
 import Pastilla from '../../components/ActAcademicas/detalle/Pastilla.astro';
 ---
 
-<RouteGuard client:only="react">
+<PermisosDelUsuario permiso="verDashboardAdmin" client:only="react">
   <Layout title="Dashboard de Admin">
     <Pastilla title="Dashboard de Admin" />
     <main class="container mx-auto mt-8 p-4 h-screen ">
         <Vista client:only="react" />
     </main>
   </Layout>
-</RouteGuard>
-
+</PermisosDelUsuario>
 
 

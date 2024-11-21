@@ -28,5 +28,5 @@ export default function RouteGuard({ children }) {
 
   if (!hasAccess) return null; // No renderiza el contenido si no tiene acceso
 
-  return <>{children}</>;
+  return <div className='flex flex-col'>{children}</div>;
 }

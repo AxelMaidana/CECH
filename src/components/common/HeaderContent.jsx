@@ -90,7 +90,7 @@ export default function ContentHeader({ logoSrc, titleLine1, titleLine2, loginBu
               <h1 className="text-md text-white font-bold hidden md:block">
                 <div className="tracking-wider leading-tight">
                   {/* Muestra el uid del usuario directamente desde currentUser */}
-                  <span>{userData.name} {userData.lastName}</span>
+                  <span>{userData.name} {userData.lastname}</span>
                   <span className="block text-xs text-cyan-400">
                     {userData?.infoExtra}
                   </span>
