@@ -15,36 +15,25 @@ const customIcon = L.icon({
 const locations = [
   {
     id: 1,
-    name: 'Av. Sarmiento 1234, Resistencia, Chaco',
+    name: 'San Fernando 156, Resistencia, Chaco',
     HorariosTitle: 'Horarios de Atención',
-    coordinates: [-27.4415279, -58.9754083] as [number, number],
+    coordinates: [-27.441302409202233, -58.99488301349367] as [number, number],
     image: '/media/mapa.png',
     description: 'Lunes a viernes de 08:30 a 13:00 hs y 16:00 a 20:30 hs',
   },
-  {
-    id: 2,
-    name: 'French 414, Resistencia, Chaco',
-    HorariosTitle: 'Horarios de Atención',
-    coordinates: [-27.4511178, -58.9790227] as [number, number],
-    image: '/media/mapa.png',
-    description: 'Lunes a viernes de 09:00 a 13:00 hs y 16:30 a 20:30 hs',
-  },
-  {
-    id: 3,
-    name: 'San Fernando 156, Resistencia, Chaco',
-    HorariosTitle: 'Horarios de Atención',
-    coordinates: [-27.4413643, -58.9949152] as [number, number],
-    image: '/media/mapa.png',
-    description: 'Lunes a viernes de 09:00 a 13:00 hs y 16:00 a 20:00 hs',
-  },
 ];
 
-// Componente para actualizar la vista del mapa
+// Componente para actualizar la vista del mapa con animación
 function ChangeView({ center }: { center: [number, number] }) {
   const map = useMap();
+
   useEffect(() => {
-    map.setView(center, 16);
+    map.flyTo(center, 16, {
+      animate: true,
+      duration: 1.5, // Duración de la animación en segundos
+    });
   }, [center, map]);
+
   return null;
 }
 

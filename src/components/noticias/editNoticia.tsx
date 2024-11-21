@@ -25,6 +25,7 @@ export default function noticiaEditor({ noticiaId }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     loadNoticiaData();
@@ -79,12 +80,11 @@ export default function noticiaEditor({ noticiaId }: Props) {
         imageUrl: currentImageUrl,
       });
 
-      alert('Noticia actualizada exitosamente');
-      window.history.back();
+      setShowSuccessModal(true); // Mostrar el modal de éxito
 
     } catch (error) {
       console.error('Error al guardar la noticia:', error);
-      alert('Error al guardar la noticia');
+      setError('Error al guardar la noticia');
     }
   }
 
@@ -164,6 +164,25 @@ export default function noticiaEditor({ noticiaId }: Props) {
           </button>
         </div>
       </div>
+
+      {/* Modal de éxito */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 animate-fadeIn">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-lg font-bold">¡Éxito!</h2>
+            <p>Noticia actualizada exitosamente.</p>
+            <button
+              onClick={() => {
+                setShowSuccessModal(false);
+                window.history.back();
+              }}
+              className="mt-4 px-4 py-2 bg-customBlue text-white rounded"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

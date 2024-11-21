@@ -21,6 +21,13 @@ const noticias = querySnapshot.docs.map(doc => ({
   id: doc.id,
   ...doc.data()
 }));
+
+// Función para formatear la fecha
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString); // Convertir el string a un objeto Date
+  const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' }; // Formato "dd/mm/yyyy"
+  return new Intl.DateTimeFormat('es-ES', options).format(date);
+};
 ---
 
 <Layout title={pageId}>
@@ -49,7 +56,7 @@ const noticias = querySnapshot.docs.map(doc => ({
                     <Card
                       title={noticia.title}
                       imageUrl={noticia.imageUrl}
-                      date={noticia.date}
+                      date={formatDate(noticia.date)}
                       id={noticia.id}
                       client:only="react"
                     />

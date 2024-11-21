@@ -112,7 +112,7 @@ const RegisterModal = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 12h12M12 6v12" />
           </svg>
         </span>
-        <span className="hidden sm:block">Agregar curso</span>
+        <span className="hidden sm:block">Agregar miembro</span>
       </button>
 
       <div

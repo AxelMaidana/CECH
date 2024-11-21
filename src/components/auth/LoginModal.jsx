@@ -33,7 +33,7 @@ const LoginModal = () => {
 
         // Si el inicio de sesión es exitoso, no hacer cambios en Firestore
         setMessage('¡Inicio de sesión exitoso!');
-        window.location.href = `/`;
+        window.location.reload();
         return;
       } catch (signInError) {
         // Si el inicio de sesión falla, creamos el usuario en Firebase Auth

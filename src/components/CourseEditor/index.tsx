@@ -38,6 +38,7 @@ export default function CourseEditor({ courseId }: Props) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [editingTeacherIndex, setEditingTeacherIndex] = useState<number | null>(null);
   const [showTeacherForm, setShowTeacherForm] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Cargar los datos del curso al montar el componente
@@ -74,7 +75,7 @@ export default function CourseEditor({ courseId }: Props) {
           day: data.day || '',
           startTime: data.startTime || '',
           endTime: data.endTime || '',
-          hours: data.startTime+' a '+data.endTime || ''
+          hours: `${data.startTime} a ${data.endTime}` || ''
         });
       } else {
         setError('No se encontró el curso especificado');
@@ -102,11 +103,10 @@ export default function CourseEditor({ courseId }: Props) {
         ...courseData,
         imageUrl
       });
-      alert('Curso actualizado exitosamente');
-      window.history.back();
+      setShowSuccessModal(true); // Show success modal
     } catch (error) {
       console.error('Error saving course:', error);
-      alert('Error al guardar el curso');
+      setError('Error al guardar el curso');
     }
   }
 
@@ -195,7 +195,6 @@ export default function CourseEditor({ courseId }: Props) {
 
   if (loading) return <div className="text-center py-8">Cargando datos del curso...</div>;
   if (error) return <div className="text-red-500 text-center py-8">{error}</div>;
-
 
   return (
     <div className="w-full max-w-full">
@@ -393,7 +392,24 @@ export default function CourseEditor({ courseId }: Props) {
                 </div>
               </div>
 
-
+          {/* Success Modal */}
+          {showSuccessModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 animate-fadeIn">
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-lg font-bold">¡Éxito!</h2>
+                <p>Curso actualizado exitosamente.</p>
+                <button
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    window.history.back();
+                  }}
+                  className="mt-4 px-4 py-2 bg-customBlue text-white rounded"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col md:flex-row gap-4 justify-end">
             <button
@@ -413,7 +429,4 @@ export default function CourseEditor({ courseId }: Props) {
     </div>
   </div>
 </div>
-
-
-  );
-}
+)}
