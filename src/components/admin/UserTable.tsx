@@ -75,7 +75,7 @@ interface User {
   role: string;
 }
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 10;
 
 const UserTable = () => {
   const [users, setUsers] = useState<User[]>([]);

@@ -7,6 +7,7 @@ import CoursesDropdown from './CoursesDropdown';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { deleteUser } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
+import { updateEmail } from 'firebase/auth';
 
 export default function UserProfile({ userId }) {
   const [userData, setUserData] = useState(null);
@@ -129,16 +130,35 @@ export default function UserProfile({ userId }) {
         await updateDoc(doc(db, 'users', userId), {
           profileImageUrl: imageUrl,
         });
-
-     
       }
-
-  
     } catch (error) {
       console.error("Error updating user data:", error);
       alert('Error al actualizar los datos');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleChangeEmail = async () => {
+    const user = auth.currentUser;
+  
+    if (!user) {
+      alert('No se ha encontrado un usuario autenticado.');
+      return;
+    }
+  
+    if (formData.email === '') {
+      alert('Por favor, ingrese un correo electrónico válido.');
+      return;
+    }
+  
+    try {
+      await updateEmail(user, formData.email); // Actualiza el correo en Firebase Authentication
+      await updateDoc(doc(db, 'users', userId), { email: formData.email }); // Actualiza el correo en Firestore
+      alert('Correo electrónico actualizado exitosamente.');
+    } catch (error) {
+      console.error('Error al cambiar el correo:', error);
+      alert('Hubo un error al intentar cambiar el correo.');
     }
   };
 
@@ -181,7 +201,6 @@ export default function UserProfile({ userId }) {
       alert('Error al eliminar el usuario.');
     }
   };
-  
 
   if (loading) {
     return (
@@ -302,16 +321,32 @@ export default function UserProfile({ userId }) {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700">Correo Electrónico</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Correo Electrónico"
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm bg-white text-gray-500 px-4 py-2"
-                value={formData.email}
-                onChange={handleChange}
-              />
+              <div className='flex items-center gap-2 justify-between'>
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700">
+                Correo Electrónico
+                </label>
+                 {/* Botón para cambiar el correo 
+                  <button
+                  onClick={handleChangeEmail}
+                  className="text-[#187498] text-sm hover:text-blue-400 hover:underline"
+                  title="Actualizar correo"
+                >
+                  Actualizar correo
+                </button>
+                 */}
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Correo Electrónico"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm bg-gray-100 text-gray-500 px-4 py-2 outline-none pointer-events-none"
+                  value={formData.email}
+                  onChange={handleChange}
+                  readOnly
+                />
+              </div>
             </div>
 
             <div>
@@ -324,7 +359,7 @@ export default function UserProfile({ userId }) {
                 id="password"
                 name="password"
                 placeholder="Contraseña"
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm bg-white text-gray-500 px-4 py-2"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm bg-gray-100 text-gray-500 px-4 py-2"
                 value={isPasswordEditing ? newPassword : '********'}
                 onChange={(e) => setNewPassword(e.target.value)}
                 disabled={!isPasswordEditing}

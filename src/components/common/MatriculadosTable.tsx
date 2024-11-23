@@ -114,7 +114,8 @@ const UserTable = () => {
         user.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.dni.includes(searchTerm) ||
-        user.matricula.includes(searchTerm)
+        user.matricula.includes(searchTerm) ||
+        user.cargo.toLowerCase().includes(searchTerm.toLowerCase())
     );
   
     const paginatedUsers = filteredUsers;

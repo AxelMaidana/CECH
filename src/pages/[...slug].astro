@@ -5,22 +5,18 @@ import { db } from '../firebase/client';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import Card from '../components/noticias/ultNoticias';
 
-const { menuTitle ,slug } = Astro.params;
-const pageId = slug || 'asd';
+const { slug } = Astro.params;
+const pageId = decodeURIComponent(slug || 'asd'); // Decodificar el `slug` para evitar problemas con caracteres especiales
 
-//ver si la pagina existe
+// Verificar si la página existe
 const pageRef = doc(db, 'pages', pageId);
 const pageSnap = await getDoc(pageRef);
-
-let pageExists = pageSnap.exists(); 
-
-//traer el titulo del menu de la pagina
-
+const pageExists = pageSnap.exists();
 
 // Traer las noticias de la base de datos
 const noticiasCollection = collection(db, 'noticias');
-const querySnapshot = await getDocs(noticiasCollection);
-const noticias = querySnapshot.docs.map(doc => ({
+const noticiasSnapshot = await getDocs(noticiasCollection);
+const noticias = noticiasSnapshot.docs.map(doc => ({
   id: doc.id,
   ...doc.data()
 }));
@@ -31,15 +27,41 @@ const formatDate = (dateString: string) => {
   const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' }; // Formato "dd/mm/yyyy"
   return new Intl.DateTimeFormat('es-ES', options).format(date);
 };
+
+// Referencia al documento en la colección `menu`
+const menuRef = doc(db, 'menu', pageId);
+
+// Obtener el documento directamente por su ID
+const menuSnap = await getDoc(menuRef);
+
+// Inicializar `tituloPagina`
+let tituloPagina = 'Actividades Académicas';
+
+// Determinar el título según el ID específico
+if (menuSnap.exists()) {
+  // Obtener datos del documento
+  const data = menuSnap.data();
+
+  // Comparar `pageId` con los casos específicos
+  switch (pageId) {
+    case 'act.academica-biblioteca':
+      tituloPagina = 'Biblioteca';
+      break;
+    case 'act.academica-propuesta-educativa':
+      tituloPagina = 'Propuesta Educativa';
+      break;
+    default:
+      // Caso general: usar `tituloPagina` del documento o un valor por defecto
+      tituloPagina = data.tituloPagina || 'Actividades Académicas';
+      break;
+  }
+}
 ---
 
-<Layout title={pageId}>
+<Layout title={tituloPagina}>
   {pageExists ? (
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div class="flex flex-col lg:flex-row gap-6">
-        
-
-
         <!-- Contenido principal -->
         <main class="flex-1 w-screen pr-8 md:pr-0 mb-10">
           <EditorComponent client:only="react" pageId={pageId}/>
@@ -99,13 +121,3 @@ const formatDate = (dateString: string) => {
     </div>
   )}
 </Layout>
-
-<style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-</style>
