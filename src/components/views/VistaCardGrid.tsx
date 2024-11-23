@@ -86,14 +86,14 @@ const Vista = () => {
       <div className="my-10">
         <div className='flex justify-between items-center'>
           <div className="relative flex-shrink-0">
-            <h3 className="md:text-2xl font-bold bg-customGreen text-white md:px-8 md:py-2.5 px-3 py-1 rounded-r-full text-center">
+            <h3 className="md:text-2xl font-bold bg-customGreen text-white md:px-8 md:py-2.5 px-3 py-2 rounded-r-full text-center">
               Cursos disponibles
             </h3>
           </div>
 
         {/* Campo de búsqueda */}
-            <div className='flex gap-2 items-center'>
-              <VistaCrearCurso />
+            <div className='flex gap-2 items-center md:flex-row flex-col md:gap-0'>
+                <VistaCrearCurso />
               <div className="relative flex w-fit items-center ml-1 md:ml-4 md:mr-5 border-2 border-customGreen rounded-3xl">
                 <input
                   type="text"

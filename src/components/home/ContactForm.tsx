@@ -1,5 +1,7 @@
 import { useState } from "react";
 import emailjs from "emailjs-com";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase Storage SDK
+import { storage } from "../../firebase/client";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -10,8 +12,8 @@ const ContactForm = () => {
     image: null, // Para almacenar la imagen seleccionada
   });
   const [message, setMessage] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
-  // Maneja el cambio de los campos del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -20,64 +22,68 @@ const ContactForm = () => {
     }));
   };
 
-  // Maneja la selección de imagen
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
+    if (file && !file.type.startsWith("image/")) {
+      alert("Por favor selecciona un archivo de imagen válido.");
+      return;
+    }
+    if (file && file.size > 5 * 1024 * 1024) {
+      alert("La imagen no debe superar los 5 MB.");
+      return;
+    }
     setFormData((prevData) => ({
       ...prevData,
       image: file,
     }));
   };
+  
 
-  // Función para convertir FormData a un objeto plano
-  const convertFormDataToObject = (formData: FormData) => {
-    const obj: Record<string, unknown> = {};
-    formData.forEach((value, key) => {
-      obj[key] = value;
-    });
-    return obj;
-  };
-
-  // Enviar el formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const form = e.target as HTMLFormElement;
-    const formDataToSend = new FormData(form); // Crear un objeto FormData
+    try {
+      setIsUploading(true);
+      let imageUrl = "";
 
-    // Si hay una imagen, agregarla como archivo
-    if (formData.image) {
-      formDataToSend.append("image", formData.image);
-    }
+      if (formData.image) {
+        // Subir imagen a Firebase Storage
+        const imageRef = ref(storage, `images/${formData.dni}/${Date.now()}-${formData.image.name}`);
+        await uploadBytes(imageRef, formData.image);
+        imageUrl = await getDownloadURL(imageRef);
+      }
 
-    // Convertir FormData a un objeto plano
-    const formDataObject = convertFormDataToObject(formDataToSend);
+      // Datos del formulario para enviar a EmailJS
+      const formDataObject = {
+        name: formData.name,
+        dni: formData.dni,
+        email: formData.email,
+        phone: formData.phone,
+        image_url: imageUrl || "No se subió ninguna imagen",
+      };
 
-    // Usar emailjs.send con un objeto plano
-    emailjs
-      .send(
-        "service_1ivbm3y", // Reemplaza con tu ID de servicio de EmailJS
-        "template_i3ji9hd", // Reemplaza con tu ID de plantilla de EmailJS
-        formDataObject, // Pasar el objeto plano
-        "Qx0AqfxjtNIVVyQY5" // Reemplaza con tu ID de usuario de EmailJS
-      )
-      .then(
-        (response) => {
-          console.log("Éxito:", response);
-          setMessage("¡Tu mensaje fue enviado con éxito! Nos pondremos en contacto pronto.");
-          setFormData({
-            name: "",
-            dni: "",
-            email: "",
-            phone: "",
-            image: null,
-          });
-        },
-        (error) => {
-          console.log("Error:", error);
-          setMessage("Hubo un error al enviar el mensaje. Intenta nuevamente.");
-        }
+      // Enviar correo con EmailJS
+      await emailjs.send(
+        "service_tu9kik5", // Reemplaza con tu ID de servicio de EmailJS
+        "template_40z5kyi", // Reemplaza con tu ID de plantilla de EmailJS
+        formDataObject,
+        "fmsLmyp9XKYLAzpqV" // Reemplaza con tu ID de usuario de EmailJS
       );
+
+      setMessage("¡Tu mensaje fue enviado con éxito! Nos pondremos en contacto pronto.");
+      setFormData({
+        name: "",
+        dni: "",
+        email: "",
+        phone: "",
+        image: null,
+      });
+    } catch (error) {
+      console.error("Error al enviar el formulario:", error);
+      setMessage("Hubo un error al enviar el mensaje. Intenta nuevamente.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -138,7 +144,6 @@ const ContactForm = () => {
                   />
                 </div>
 
-                {/* Imagen al lado de los inputs */}
                 <div className="w-full lg:w-1/2 aspect-[16/9] bg-gray-200 rounded-xl flex items-center justify-center overflow-hidden cursor-pointer relative">
                   <input
                     type="file"
@@ -159,8 +164,9 @@ const ContactForm = () => {
                 <button
                   type="submit"
                   className="w-full sm:w-72 bg-customGreen text-white py-3 px-6 rounded-3xl transition-transform hover:scale-105"
+                  disabled={isUploading}
                 >
-                  Enviar
+                  {isUploading ? "Enviando..." : "Enviar"}
                 </button>
               </div>
             </form>

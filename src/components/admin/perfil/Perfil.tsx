@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../../firebase/client';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { PermissionsDropdown } from './PermissionsDropdown';
 import CoursesDropdown from './CoursesDropdown';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { deleteUser } from 'firebase/auth';
 
 export default function UserProfile({ userId }) {
   const [userData, setUserData] = useState(null);
@@ -21,6 +22,7 @@ export default function UserProfile({ userId }) {
   const [newPassword, setNewPassword] = useState('');
   const [imagePreview, setImagePreview] = useState(''); // Estado para previsualizar la imagen
   const [selectedImage, setSelectedImage] = useState(null); // Estado para la imagen seleccionada
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -81,6 +83,8 @@ export default function UserProfile({ userId }) {
     setFormData({ ...formData, [name]: value });
   };
 
+
+
   const handleChangePassword = async () => {
     if (!newPassword) {
       alert('Por favor, ingrese una nueva contraseña.');
@@ -137,6 +141,24 @@ export default function UserProfile({ userId }) {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const user = auth.currentUser;
+  
+      if (user?.uid === userId) {
+        await deleteUser(user);
+        await deleteDoc(doc(db, 'users', userId)); // Elimina los datos en Firestore
+        alert('Usuario y datos eliminados exitosamente.');
+        window.location.href = '/admin/dashboard';
+      } else {
+        alert('No tienes permiso para eliminar este usuario.');
+      }
+    } catch (error) {
+      console.error('Error al eliminar el usuario:', error);
+      alert('Error al eliminar el usuario.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="max-w-7xl w-full mx-auto p-4 md:p-8 mb-auto rounded-3xl shadow-md bg-white">
@@ -152,7 +174,7 @@ export default function UserProfile({ userId }) {
   }
 
   return (
-    <div className="max-w-7xl w-full mx-auto p-4 md:p-8 mb-auto rounded-3xl shadow-md bg-white">
+    <div className="max-w-7xl w-full mx-auto p-4 md:p-8 mb-auto rounded-3xl shadow-md bg-white ">
       <h1 className="text-4xl text-customBlack font-bold uppercase mb-12 text-center">
         {userData.name} {userData.lastname}
       </h1>
@@ -171,6 +193,7 @@ export default function UserProfile({ userId }) {
             <img src="/media/SubirImagen.png" alt="Subir imagen" className="w-16 h-16 md:w-24 md:h-24 text-white" />
           </div>
         </div>
+        <div className='flex justify-between items-center gap-2'>
         <button
             onClick={handleSave}
             className="w-fit p-1 mt-4 mb-6 bg-[#187498] text-white rounded-full hover:bg-cyan-600 hover:scale-105 transition-all duration-200"
@@ -188,6 +211,39 @@ export default function UserProfile({ userId }) {
               </div>
             )}
           </button>
+          
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="w-fit p-1 mt-4 mb-6 bg-red-500 border-red text-white rounded-full hover:bg-red-400 hover:scale-110 transition-all duration-200"
+            disabled={saving}
+            title="Eliminar usuario" // Agregado para mostrar el texto al hacer hover
+          >
+            {saving ? (
+              <svg className="animate-spin w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v2a6 6 0 100 12v2a8 8 0 01-8-8z"></path>
+              </svg>
+            ) : (
+              
+              <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="red"
+              className="bg-red-600 rounded-full transition-colors duration-300"
+              x="0px"
+              y="0px"
+              width="20"
+              height="20"
+              viewBox="0 0 48 48"
+            >
+              <path d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z"></path>
+              <path fill="#fff" d="M29.656,15.516l2.828,2.828l-14.14,14.14l-2.828-2.828L29.656,15.516z"></path>
+              <path fill="#fff" d="M32.484,29.656l-2.828,2.828l-14.14-14.14l2.828-2.828L32.484,29.656z"></path>
+            </svg>
+            
+              
+            )}
+          </button>
+        </div>
       </div>
 
         <div className="md:col-span-2">
@@ -282,6 +338,32 @@ export default function UserProfile({ userId }) {
       </div>
 
       <CoursesDropdown userId={userId} />
+      
+      {/* Modal de confirmación */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-md max-w-sm w-full">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Confirmar eliminación</h2>
+            <p className="text-gray-600 mb-6">
+              ¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-400 transition"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
