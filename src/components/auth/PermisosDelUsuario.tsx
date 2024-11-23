@@ -52,7 +52,7 @@ const PermisosDelUsuario = ({ permiso, children }: PermisosDelUsuarioProps) => {
     return () => unsubscribe();
   }, []);
 
-  if (loading) return <div>Cargando...</div>;
+  if (loading) return <div></div>;
   if (error) return <div>{error}</div>;
 
   // Verificamos que userPermissions sea un Map y si tiene el permiso
