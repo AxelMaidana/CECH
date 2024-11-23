@@ -83,6 +83,7 @@ const RegisterModal = () => {
       console.log('Usuario guardado exitosamente en Firestore:', email);
       closeModalMiembro('register-modal');
       resetForm();
+      window.location.reload();
     } catch (error) {
       console.error('Error al registrar:', error);
       alert(`Error al registrar: ${error.message}`);

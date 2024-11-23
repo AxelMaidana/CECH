@@ -25,7 +25,9 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body class="flex flex-col flex-grow">
-		<LoadingSpinner client:load/>
+		<div class="z-50">
+			<LoadingSpinner client:only="react" />
+		</div>
 		<ViewTransitions />
 		<Header />
 		<div class="flex self-end lg:self-auto z-40">
