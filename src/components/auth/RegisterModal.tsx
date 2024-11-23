@@ -144,7 +144,7 @@ const RegisterModal = () => {
             <input type="text" placeholder="DNI" value={dni} onChange={(e) => setDni(e.target.value)} className="border outline-none border-customBlack rounded-2xl w-full p-2" />
             <input type="text" placeholder="Matrícula" value={matricula} onChange={(e) => setMatricula(e.target.value)} className="border outline-none border-customBlack rounded-2xl w-full p-2" />
             <input type="text" placeholder="Lugar de Origen" value={lugarDeOrigen} onChange={(e) => setLugarDeOrigen(e.target.value)} className="border outline-none border-customBlack rounded-2xl w-full p-2" />
-            <input type="text" placeholder="Información Extra" value={infoExtra} onChange={(e) => setInfoExtra(e.target.value)} className="border outline-none border-customBlack rounded-2xl w-full p-2" />
+            <input type="text" placeholder="Cargo que ocupa" value={infoExtra} onChange={(e) => setInfoExtra(e.target.value)} className="border outline-none border-customBlack rounded-2xl w-full p-2" />
 
             <div className="flex justify-end col-span-1 sm:col-span-2 mt-4">
               <button type="submit" className="w-full sm:w-fit bg-[#187498] text-white px-4 py-2 rounded-xl hover:scale-105 transition duration-300 ease-in-out">

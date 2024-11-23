@@ -38,21 +38,6 @@ const PAGE_PERMISSIONS: { [key: string]: string } = {
   'noticias-delegación-reconquista': 'editarPanelNoticias',
   'noticias-delegación-santa-fe': 'editarPanelNoticias',
 
-  //permisos actuales
-/* 
-editarPanelBecas
-
-editarPanelContacto
-
-editarPanelDictamenes
-
-editarPanelInfoInstitucional
-
-editarPanelMatriculado
-
-editarPanelTramites
-
- */
 };
 
 export default function EditorComponent({ pageId }: EditorComponentProps) {
@@ -114,6 +99,20 @@ export default function EditorComponent({ pageId }: EditorComponentProps) {
     }
   };
 
+  // Dentro del archivo del componente
+  const handleFileUpload = async (file: File) => {
+    try {
+      const fileName = `${uuidv4()}_${file.name}`;
+      const storageRef = ref(storage, `uploads/${fileName}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      return await getDownloadURL(snapshot.ref);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      throw new Error('File upload failed');
+    }
+  };
+
+
   const handleImageUpload = async (blobInfo: any, progress: (percent: number) => void) => {
     return new Promise<string>(async (resolve, reject) => {
       const file = blobInfo.blob();
@@ -134,16 +133,16 @@ export default function EditorComponent({ pageId }: EditorComponentProps) {
   if (!userId) {
     return (
       <div className="w-full max-w-none lg:max-w-7xl px-2">
-        <div className="prose prose-sm sm:prose lg:prose-lg " dangerouslySetInnerHTML={{ __html: content }} />
+        <div className="prose prose-sm sm:prose lg:prose-lg" dangerouslySetInnerHTML={{ __html: content }} />
       </div>
     );
   }
   
   if (!isEditing || !hasPermission()) {
     return (
-      <div className="w-full">
+      <div className="flex flex-col w-full justify-center items-center">
         {hasPermission() && (
-          <div className="flex mb-4">
+          <div className="mb-0 justify-center text-center">
             <button
               onClick={() => setIsEditing(true)}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
@@ -152,7 +151,7 @@ export default function EditorComponent({ pageId }: EditorComponentProps) {
             </button>
           </div>
         )}
-        <div className="mx-auto lg:mx-0 prose prose-sm sm:prose lg:prose-lg xl:prose-xl 2xl:prose-2xl" dangerouslySetInnerHTML={{ __html: content }} />
+        <div className="mx-auto lg:mx-0 prose prose-sm sm:prose lg:prose-lg xl:prose-xl " dangerouslySetInnerHTML={{ __html: content }} />
       </div>
     );
   }
@@ -174,12 +173,37 @@ export default function EditorComponent({ pageId }: EditorComponentProps) {
               plugins: [
                 'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
                 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount' ,
               ],
               toolbar: 'undo redo | blocks | ' +
                 'bold italic forecolor | alignleft aligncenter ' +
-                'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | image | help',
+                'alignright alignjustify | customFileUpload image | bullist numlist outdent indent | ' +
+                'removeformat | help',
+                setup: (editor) => {
+                  editor.ui.registry.addButton('customFileUpload', {
+                    icon: 'browse',
+                    tooltip: 'Upload File',
+                    onAction: () => {
+                      const input = document.createElement('input');
+                      input.setAttribute('type', 'file');
+                      input.setAttribute('accept', '.pdf,.txt,.doc,.docx');
+                      input.onchange = async function () {
+                        const file = (input.files as FileList)[0];
+                        try {
+                          const url = await handleFileUpload(file);
+                          editor.insertContent(`<a href="${url}" target="_blank">${file.name}</a>`);
+                        } catch (error) {
+                          console.error('Error uploading file:', error);
+                          editor.notificationManager.open({
+                            text: 'File upload failed',
+                            type: 'error'
+                          });
+                        }
+                      };
+                      input.click();
+                    }
+                  });
+                },
               content_style: `
                 body { 
                   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -201,42 +225,54 @@ export default function EditorComponent({ pageId }: EditorComponentProps) {
                 }
               `,
               mobile: {
-                menubar: false,
+                menubar: true,
                 toolbar_mode: 'scrolling',
                 height: 'calc(100vh - 250px)',
                 min_height: 300
               },
-              images_upload_handler: handleImageUpload,
-              automatic_uploads: true,
-              file_picker_types: 'image',
+              file_picker_types: 'file image',
               file_picker_callback: (cb, value, meta) => {
                 const input = document.createElement('input');
                 input.setAttribute('type', 'file');
-                input.setAttribute('accept', 'image/*');
-  
-                input.onchange = function () {
+                
+                if (meta.filetype === 'image') {
+                  input.setAttribute('accept', 'image/*');
+                } else {
+                  input.setAttribute('accept', '.pdf,.txt,.doc,.docx');
+                }
+
+                input.onchange = async function () {
                   const file = (input.files as FileList)[0];
-  
-                  const reader = new FileReader();
-                  reader.onload = function () {
-                    const id = 'blobid' + (new Date()).getTime();
-                    const blobCache = (window as any).tinymce.activeEditor.editorUpload.blobCache;
-                    const base64 = (reader.result as string).split(',')[1];
-                    const blobInfo = blobCache.create(id, file, base64);
-                    blobCache.add(blobInfo);
-  
-                    cb(blobInfo.blobUri(), { title: file.name });
-                  };
-                  reader.readAsDataURL(file);
+                  
+                  if (meta.filetype === 'image') {
+                    const reader = new FileReader();
+                    reader.onload = function () {
+                      const id = 'blobid' + (new Date()).getTime();
+                      const blobCache = (window as any).tinymce.activeEditor.editorUpload.blobCache;
+                      const base64 = (reader.result as string).split(',')[1];
+                      const blobInfo = blobCache.create(id, file, base64);
+                      blobCache.add(blobInfo);
+
+                      cb(blobInfo.blobUri(), { title: file.name });
+                    };
+                    reader.readAsDataURL(file);
+                  } else {
+                    try {
+                      const url = await handleFileUpload(file);
+                      cb(url, { text: file.name, title: file.name });
+                    } catch (error) {
+                      console.error('Error uploading file:', error);
+                    }
+                  }
                 };
-  
+
                 input.click();
               }
             }}
             value={content}
             onEditorChange={(newContent) => setContent(newContent)}
           />
-          <div className="mt-4 flex flex-col sm:flex-row gap-2 justify-center sm:justify-end">
+          <div className="mt-4 flex flex-col sm:flex-row gap-2 justify-center sm:justify-end mb-10">
             <button
               onClick={() => setIsEditing(false)}
               className="w-full sm:w-auto bg-gray-400 hover:bg-gray-700 shadow-md text-white font-bold py-2 px-6 rounded"

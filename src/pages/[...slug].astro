@@ -5,14 +5,17 @@ import { db } from '../firebase/client';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import Card from '../components/noticias/ultNoticias';
 
-const { slug } = Astro.params;
-const pageId = slug || 'index';
+const { menuTitle ,slug } = Astro.params;
+const pageId = slug || 'asd';
 
 //ver si la pagina existe
 const pageRef = doc(db, 'pages', pageId);
 const pageSnap = await getDoc(pageRef);
 
 let pageExists = pageSnap.exists(); 
+
+//traer el titulo del menu de la pagina
+
 
 // Traer las noticias de la base de datos
 const noticiasCollection = collection(db, 'noticias');
@@ -38,12 +41,12 @@ const formatDate = (dateString: string) => {
 
 
         <!-- Contenido principal -->
-        <main class="flex-1 w-screen pr-8 md:pr-0">
+        <main class="flex-1 w-screen pr-8 md:pr-0 mb-10">
           <EditorComponent client:only="react" pageId={pageId}/>
         </main>
 
-        <!-- Línea separadora -->
-        <div class="hidden lg:block w-px bg-gray-200 self-stretch mx-2"></div>
+        <!-- Línea separadora que en mobile se hace horizontal -->
+        <div class="hidden lg:block w-px bg-gray-200 self-stretch mx-2 md:mx-0"></div>
 
         <!-- Columna de últimas noticias -->
         <aside class="w-full lg:w-80 flex-shrink-0">
