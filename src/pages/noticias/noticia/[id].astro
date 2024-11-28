@@ -23,81 +23,76 @@ const noticias = querySnapshot.docs.map(doc => ({
   ...doc.data()
 }));
 
-// Función para formatear la fecha
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString); // Convertir el string a un objeto Date
-  const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' }; // Formato "dd/mm/yyyy"
-  return new Intl.DateTimeFormat('es-ES', options).format(date);
-};
 ---
 
 <Layout title={noticiaData.data()?.title}>
+  <!-- Sección de columnas: noticia actual y últimas noticias -->
+  <div class="flex justify-between items-center">
+    <Pastilla title="Información del curso" />
+    <VistaBotonEditarNoticia id={id} client:only="react" />
+  </div>
   
-    <!-- Sección de columnas: noticia actual y últimas noticias -->
-    <div class="flex justify-between items-center">
-        <Pastilla title="Información del curso" />
-        <VistaBotonEditarNoticia id={id} client:only="react" />
-    </div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mt-8">
-      <div class="flex flex-col lg:flex-row gap-6">
-        <!-- Columna 1: Contenido de la noticia actual -->
-        <div class="w-full my-auto">
-          <!-- Titulo con diseño -->
-    
-          <div class="bg-white rounded-lg max-w-7xl mx-auto px-2 mb-20">
-            <div class="relative mb-4">
-              <!-- Fecha sobre la imagen -->
-              <div class="absolute top-[-20px] left-1/2 transform -translate-x-1/2 px-4 py-2 text-md font-semibold bg-[#187498] text-white rounded-full outline-none z-10">
-                {noticiaData.data()?.date}  <!-- Usamos la función de formato de fecha -->
-              </div>
-              <!-- Imagen -->
-              <img 
-                src={imageUrl}
-                alt={noticiaData.data()?.title}
-                class="w-full h-[400px] object-cover rounded-t-3xl"
-              />
+  <!-- Contenedor con márgenes y padding ajustados para la responsividad -->
+  <div class="px-4 sm:px-6 lg:px-8 py-6">
+    <div class="flex flex-col lg:flex-row gap-6">
+      <!-- Columna 1: Contenido de la noticia actual -->
+      <div class="w-full">
+        <!-- Titulo con diseño -->
+        <div class="bg-white rounded-lg w-full mx-auto px-2 mb-20">
+          
+          <div class="relative mb-4">
+            <!-- Fecha sobre la imagen -->
+            <div class="absolute top-[-20px] left-1/2 transform -translate-x-1/2 px-4 py-2 text-md font-semibold bg-[#187498] text-white rounded-full outline-none z-10">
+              {noticiaData.data()?.date} <!-- Fecha de la noticia -->
             </div>
-    
-            <!-- Título de la noticia -->
-            <div class="mb-4">
-              <h1 class="text-5xl text-customBlue font-bold">
-                {noticiaData.data()?.title}
-              </h1>
-            </div>
-    
-            <!-- Descripción -->
-            <div class="mt-6 w-full mx-auto">
-                <div class="prose w-full max-w-6xl" set:html={noticiaData.data()?.description}></div>
-            </div>
+            <!-- Imagen -->
+            <img 
+              src={imageUrl}
+              alt={noticiaData.data()?.title}
+              class="w-full h-auto object-cover rounded-t-3xl"
+            />
+          </div>
+
+          <!-- Título de la noticia -->
+          <div class="mb-4">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl text-customBlue font-bold">
+              {noticiaData.data()?.title}
+            </h1>
+          </div>
+
+          <!-- Descripción -->
+          <div class="mt-6 w-full mx-auto">
+            <div class="prose w-full max-w-full" set:html={noticiaData.data()?.description}></div>
           </div>
         </div>
-
-        <!-- Línea separadora -->
-        <div class="hidden lg:block w-px bg-gray-200 self-stretch mx-2"></div>
-
-        <!-- Columna 2: Últimas noticias -->
-        <aside class="w-full lg:w-80 flex-shrink-0">
-          <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Últimas Noticias</h2>
-          <div class="relative">
-            <div class="overflow-x-auto lg:overflow-visible scrollbar-hide px-4 sm:px-0">
-              <ul class="flex flex-row lg:flex-col gap-4 pb-4 lg:pb-0">
-                {noticias.map((noticia) => (
-                  <li class="flex-shrink-0">
-                    <Card
-                      title={noticia.title}
-                      imageUrl={noticia.imageUrl}
-                      date= {noticia.date}
-                      id={noticia.id}
-                      client:only="react"
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </aside>
       </div>
+
+      <!-- Línea separadora -->
+      <div class="hidden lg:block w-px bg-gray-200 self-stretch mx-2"></div>
+
+      <!-- Columna 2: Últimas noticias -->
+      <aside class="w-full lg:w-80 flex-shrink-0">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Últimas Noticias</h2>
+        <div class="relative">
+          <div class="overflow-x-auto lg:overflow-visible scrollbar-hide px-4 sm:px-0">
+            <ul class="flex flex-row lg:flex-col gap-4 pb-4 lg:pb-0">
+              {noticias.map((noticia) => (
+                <li class="flex-shrink-0">
+                  <Card
+                    title={noticia.title}
+                    imageUrl={noticia.imageUrl}
+                    date={noticia.date}
+                    id={noticia.id}
+                    client:only="react"
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </aside>
     </div>
+  </div>
 </Layout>
 
 <style>
@@ -107,5 +102,33 @@ const formatDate = (dateString: string) => {
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Asegurar que las imágenes sean responsivas */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Contenedor de noticias */
+  .prose {
+    max-width: 100%; /* Asegura que el texto se ajuste */
+  }
+
+  /* Ajustar el tamaño de los textos y el margen según el tamaño de pantalla */
+  h1 {
+    font-size: 2.5rem; /* Tamaño de fuente en pantallas pequeñas */
+  }
+
+  @media (min-width: 640px) {
+    h1 {
+      font-size: 3rem; /* Ajuste de tamaño para pantallas medianas */
+    }
+  }
+
+  @media (min-width: 1024px) {
+    h1 {
+      font-size: 4rem; /* Tamaño grande para pantallas grandes */
+    }
   }
 </style>
