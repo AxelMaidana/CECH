@@ -21,12 +21,7 @@ const noticias = noticiasSnapshot.docs.map(doc => ({
   ...doc.data()
 }));
 
-// Función para formatear la fecha
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString); // Convertir el string a un objeto Date
-  const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' }; // Formato "dd/mm/yyyy"
-  return new Intl.DateTimeFormat('es-ES', options).format(date);
-};
+
 
 // Referencia al documento en la colección `menu`
 const menuRef = doc(db, 'menu', pageId);
@@ -81,7 +76,7 @@ if (menuSnap.exists()) {
                     <Card
                       title={noticia.title}
                       imageUrl={noticia.imageUrl}
-                      date={formatDate(noticia.date)}
+                      date={noticia.date}
                       id={noticia.id}
                       client:only="react"
                     />

@@ -193,9 +193,7 @@ export default function UserProfile({ userId }) {
         </div>
 
         <div className="md:col-span-2">
-          <div className="mb-6">
-            <PermissionsDropdown permissions={userData.permissions} />
-          </div>
+          
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
               <label htmlFor="nombres" className="block text-sm font-semibold text-gray-700">Nombres</label>
