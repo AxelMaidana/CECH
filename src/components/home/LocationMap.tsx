@@ -19,7 +19,9 @@ const locations = [
     HorariosTitle: 'Horarios de Atención',
     coordinates: [-27.441302409202233, -58.99488301349367] as [number, number],
     image: '/media/mapa.png',
-    description: 'Lunes a viernes de 08:30 a 13:00 hs y 16:00 a 20:30 hs',
+    description: 'Martes y jueves de 18:00hs a 20:00hs',
+    HorariosCelularTitle: 'Horarios de Atención Celular',
+    descriptionCelular: 'Lunes a viernes de 09:00hs a 12:00hs y de 18:00hs a 20:00hs',
   },
 ];
 
@@ -45,7 +47,7 @@ export default function LocationMap() {
       className="relative bg-cover bg-center pt-12 pb-28" 
       style={{ backgroundImage: "url('/media/mapa.png')" }}
     >
-      <div className="absolute inset-0 bg-black opacity-70"></div>
+      <div className="absolute inset-0 bg-black opacity-80"></div>
 
       <div className="relative mx-0 w-max z-10">
         <h3 className="text-2xl font-bold mb-6 bg-customGreen text-white px-8 py-2.5 rounded-r-full text-center">
@@ -102,8 +104,12 @@ export default function LocationMap() {
           <div className="w-full lg:w-1/4 order-3">
             <div className="p-4 rounded-lg text-white text-center lg:text-start">
               <h4 className="text-2xl font-bold">{selectedLocation.HorariosTitle}</h4>
-              <p className="text-white opacity-85 mt-2 break-words text-md font-medium">
+              <p className="text-white opacity-85 mt-1 break-words text-md font-medium">
                 {selectedLocation.description}
+              </p>
+              <h4 className="text-xl font-bold mt-4">{selectedLocation.HorariosCelularTitle}</h4>
+              <p className="text-white opacity-85 mt-1 break-words text-md font-medium">
+                {selectedLocation.descriptionCelular}
               </p>
             </div>
           </div>
